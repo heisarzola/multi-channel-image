@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace Multi_Channel_Image_Tool
 {
@@ -30,6 +35,7 @@ namespace Multi_Channel_Image_Tool
             private EChannel _channelToExtract = EChannel.R;
             private EChannel _previewChannel = EChannel.R;
             private string _targetImagePath;
+            private ImageSource _extractedPreview;
 
             //------------------------------------------------------------------------------------//
             /*--------------------------------- PROPERTIES ---------------------------------------*/
@@ -59,6 +65,10 @@ namespace Multi_Channel_Image_Tool
                 set => _previewChannel = value;
             }
 
+            public ImageSource Preview => ImageUtility.Validation.IsValidImage(_targetImagePath) ? _extractedPreview : null;
+
+            public string SelectedImagePath => _targetImagePath;
+
             //------------------------------------------------------------------------------------//
             /*---------------------------------- METHODS -----------------------------------------*/
             //------------------------------------------------------------------------------------//
@@ -68,6 +78,10 @@ namespace Multi_Channel_Image_Tool
                 InitializeComponent();
                 UpdateVisualElements();
                 InitializeElements();
+                UniformValueSlider.SliderValueChanged += (sender, args) =>
+                {
+                    UpdatePreviews();
+                };
             }
 
             private void InitializeElements()
@@ -91,13 +105,88 @@ namespace Multi_Channel_Image_Tool
 
             private void UpdatePreviews()
             {
+                PreviewImage.Source = null;
+                PreviewImageTooltip.Source = null;
 
+                switch (_pickerType)
+                {
+                    case EChannelPickerType.PickTexture:
+                        if (string.IsNullOrEmpty(_targetImagePath)) { return; }
+                        _extractedPreview = ImageUtility.ImageGeneration.ExtractChannel(_targetImagePath, _channelToExtract, _previewChannel);
+                        break;
+                    case EChannelPickerType.SetUniformValue:
+                        int pickerValue = UniformValueSlider.Value;
+                        switch (_previewChannel)
+                        {
+                            case EChannel.R:
+                                _extractedPreview = ImageUtility.ImageGeneration.GenerateSolidColor(pickerValue, 0, 0, 255);
+                                break;
+                            case EChannel.G:
+                                _extractedPreview = ImageUtility.ImageGeneration.GenerateSolidColor(0, pickerValue, 0, 255);
+                                break;
+                            case EChannel.B:
+                                _extractedPreview = ImageUtility.ImageGeneration.GenerateSolidColor(0, 0, pickerValue, 255);
+                                break;
+                            case EChannel.A:
+                                _extractedPreview = ImageUtility.ImageGeneration.GenerateSolidColor(pickerValue, pickerValue, pickerValue, pickerValue);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                PreviewImage.Source = _extractedPreview;
+                PreviewImageTooltip.Source = _extractedPreview;
             }
 
             private void OnSelectedPickerTypeChanged(object sender, SelectionChangedEventArgs e)
             {
-                _pickerType = (EChannelPickerType) PickerType.SelectedIndex;
+                _pickerType = (EChannelPickerType)PickerType.SelectedIndex;
                 UpdateVisualElements();
+            }
+
+            private void PickImage(object sender, RoutedEventArgs e)
+            {
+                CommonOpenFileDialog dialog = new CommonOpenFileDialog
+                {
+                    IsFolderPicker = false
+                };
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    if (ImageUtility.Validation.IsValidImage(dialog.FileName))
+                    {
+                        _targetImagePath = dialog.FileName;
+                        TargetImagePath.Text = _targetImagePath;
+                    }
+                    else
+                    {
+                        MessageBox.Show("The selected file is not a valid image.");
+                        _targetImagePath = string.Empty;
+                    }
+                    UpdatePreviews();
+                }
+            }
+
+            private void OnTargetChannelChanged(object sender, SelectionChangedEventArgs e)
+            {
+                _channelToExtract = (EChannel)ChannelToExtract.SelectedIndex;
+                UpdatePreviews();
+            }
+
+            private void TryRefreshImage(object sender, RoutedEventArgs e)
+            {
+                if (ImageUtility.Validation.IsValidImage(TargetImagePath.Text))
+                {
+                    _targetImagePath = TargetImagePath.Text;
+                }
+                else
+                {
+                    MessageBox.Show("The provided file path does not point to a valid image.");
+                }
+                UpdatePreviews();
             }
         }
     }

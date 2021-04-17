@@ -34,17 +34,24 @@
                     <ColumnDefinition Width="110"/>
                     <ColumnDefinition Width="40"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Target Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                <Button Grid.Column="1" Width="30" Height="30" Focusable="False">
+                <Button Grid.Column="1" Width="30" Focusable="False" Margin="5,0" Click="PickImage">
                     <Button.Content>
                         <Image Source="../Images/Folder.png" Margin="5"/>
                     </Button.Content>
                 </Button>
 
-                <TextBox Grid.Column="2"/>
+                <TextBox Name="TargetImagePath" Grid.Column="2" VerticalContentAlignment="Center"/>
+
+                <Button Grid.Column="3" Width="30" Focusable="False" Margin="5,0" Click="TryRefreshImage">
+                    <Button.Content>
+                        <Image Source="../Images/Refresh.png" Margin="3"/>
+                    </Button.Content>
+                </Button>
 
             </Grid>
 
@@ -56,7 +63,7 @@
 
                 <TextBlock Text="Channel To Extract" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                <ComboBox Name="ChannelToExtract" Grid.Column="1" HorizontalContentAlignment="Center" VerticalAlignment="Center">
+                <ComboBox Name="ChannelToExtract" Grid.Column="1" HorizontalContentAlignment="Center" VerticalAlignment="Center" SelectionChanged="OnTargetChannelChanged">
                     <ComboBox.Items>
                         <ComboBoxItem Content="R" HorizontalContentAlignment="Center"/>
                         <ComboBoxItem Content="G" HorizontalContentAlignment="Center"/>
@@ -74,11 +81,11 @@
                 <TextBlock Text="(Hover To Magnify)" Margin="20 0" VerticalAlignment="Center" FontSize="10" HorizontalAlignment="Center"/>
             </StackPanel>
             <Border BorderThickness="1" BorderBrush="DarkGray">
-                <Image x:Name="PreviewImage" Height="50" Width="50" Source="../Icon.ico" Margin="3 3 3 1">
+                <Image x:Name="PreviewImage" Height="50" Width="50" Source="../Icon.ico" Margin="3 3 3 1" Stretch="Fill">
                     <Image.ToolTip>
                         <ToolTip>
                             <ToolTip.Content>
-                                <Image Source="../Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                <Image Name="PreviewImageTooltip" Source="../Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200" Stretch="Fill"/>
                             </ToolTip.Content>
                         </ToolTip>
                     </Image.ToolTip>

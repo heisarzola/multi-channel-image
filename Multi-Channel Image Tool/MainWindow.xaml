@@ -158,7 +158,7 @@
             </TabItem>
         </TabControl>
 
-        <DockPanel Grid.Row="1" Margin="5 5 5 5" VerticalAlignment="Center">
+        <DockPanel Grid.Row="1" Margin="10 5" VerticalAlignment="Center">
             <TextBlock Foreground="Red" Text="I AM ERROR" VerticalAlignment="Center"/>
         </DockPanel>
 
