@@ -78,7 +78,7 @@
                     <Image.ToolTip>
                         <ToolTip>
                             <ToolTip.Content>
-                                <Image Source="../Icon.ico" MaxHeight="500" MaxWidth="500" MinHeight="200" MinWidth="200"/>
+                                <Image Source="../Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
                             </ToolTip.Content>
                         </ToolTip>
                     </Image.ToolTip>

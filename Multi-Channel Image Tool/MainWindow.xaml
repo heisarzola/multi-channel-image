@@ -58,12 +58,103 @@
 
                     <Grid Grid.Column="1">
 
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" MaxHeight="20"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*" MaxHeight="30"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Final Result" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                        <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Margin="15 10 15 15">
+                            <Image Name="FinalPreviewImage" Stretch="Uniform" Source="Icon.ico" Margin="5">
+                                <Image.ToolTip>
+                                    <ToolTip>
+                                        <ToolTip.Content>
+                                            <Image Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                        </ToolTip.Content>
+                                    </ToolTip>
+                                </Image.ToolTip>
+                            </Image>
+                        </Border>
+
+                        <Button Focusable="False" Content="Save As..." IsEnabled="False" Grid.Row="2" Margin="15 0 15 10"/>
+
                     </Grid>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Split">
+                <Grid>
 
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*" MaxHeight="30"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/> 
+                        <ColumnDefinition Width="*"/> 
+                        <ColumnDefinition Width="*"/> 
+                        <ColumnDefinition Width="*"/> 
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Row="0" Grid.ColumnSpan="4" Margin="10 5" Content="Pick New Target"/>
+
+                    <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Grid.Column="0" Margin="10">
+                        <Image Name="FinalRPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
+                            <Image.ToolTip>
+                                <ToolTip>
+                                    <ToolTip.Content>
+                                        <Image Name="FinalRPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                    </ToolTip.Content>
+                                </ToolTip>
+                            </Image.ToolTip>
+                        </Image>
+                    </Border>
+
+                    <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Grid.Column="1" Margin="10">
+                        <Image Name="FinalGPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
+                            <Image.ToolTip>
+                                <ToolTip>
+                                    <ToolTip.Content>
+                                        <Image Name="FinalGPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                    </ToolTip.Content>
+                                </ToolTip>
+                            </Image.ToolTip>
+                        </Image>
+                    </Border>
+
+                    <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Grid.Column="2" Margin="10">
+                        <Image Name="FinalBPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
+                            <Image.ToolTip>
+                                <ToolTip>
+                                    <ToolTip.Content>
+                                        <Image Name="FinalBPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                    </ToolTip.Content>
+                                </ToolTip>
+                            </Image.ToolTip>
+                        </Image>
+                    </Border>
+
+                    <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Grid.Column="3" Margin="10">
+                        <Image Name="FinalAPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
+                            <Image.ToolTip>
+                                <ToolTip>
+                                    <ToolTip.Content>
+                                        <Image Name="FinalAPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                    </ToolTip.Content>
+                                </ToolTip>
+                            </Image.ToolTip>
+                        </Image>
+                    </Border>
+
+                    <Button Name="SaveR" Focusable="False" Grid.Row="2" Grid.Column="0" Margin="10 5" Content="Save As..." IsEnabled="False"/>
+                    <Button Name="SaveG" Focusable="False" Grid.Row="2" Grid.Column="1" Margin="10 5" Content="Save As..." IsEnabled="False"/>
+                    <Button Name="SaveB" Focusable="False" Grid.Row="2" Grid.Column="2" Margin="10 5" Content="Save As..." IsEnabled="False"/>
+                    <Button Name="SaveA" Focusable="False" Grid.Row="2" Grid.Column="3" Margin="10 5" Content="Save As..." IsEnabled="False"/>
+                </Grid>
             </TabItem>
         </TabControl>
 
