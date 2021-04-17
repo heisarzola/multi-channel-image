@@ -3,10 +3,73 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Multi_Channel_Image_Tool"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        xmlns:uc="clr-namespace:Multi_Channel_Image_Tool.User_Controls"
+        Icon="Icon.ico" mc:Ignorable="d"
+        Title="Multi-Channel Image Tool" Height="350" Width="600" MinHeight="350" MinWidth="600">
     <Grid>
-        
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+
+        <TabControl Margin="10" Grid.Row="0">
+
+            <TabItem Header="Combine">
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TabControl TabStripPlacement="Bottom" >
+                        <TabControl.Resources>
+                            <Style TargetType="{x:Type TabPanel}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </TabControl.Resources>
+
+                        <TabItem>
+                            <TabItem.Header>
+                                <TextBlock Text="R" Foreground="Red" FontWeight="Bold" />
+                            </TabItem.Header>
+                            <uc:ImageChannelPicker PreviewChannel="R"/>
+                        </TabItem>
+                        <TabItem>
+                            <TabItem.Header>
+                                <TextBlock Text="G" Foreground="Green" FontWeight="Bold" />
+                            </TabItem.Header>
+                            <uc:ImageChannelPicker PreviewChannel="G"/>
+                        </TabItem>
+                        <TabItem>
+                            <TabItem.Header>
+                                <TextBlock Text="B" Foreground="Blue" FontWeight="Bold" />
+                            </TabItem.Header>
+                            <uc:ImageChannelPicker PreviewChannel="B"/>
+                        </TabItem>
+                        <TabItem>
+                            <TabItem.Header>
+                                <TextBlock Text="A" Foreground="Black" FontWeight="Bold" />
+                            </TabItem.Header>
+                            <uc:ImageChannelPicker PreviewChannel="A"/>
+                        </TabItem>
+                    </TabControl>
+
+                    <Grid Grid.Column="1">
+
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Split">
+
+            </TabItem>
+        </TabControl>
+
+        <DockPanel Grid.Row="1" Margin="5 5 5 5" VerticalAlignment="Center">
+            <TextBlock Foreground="Red" Text="I AM ERROR" VerticalAlignment="Center"/>
+        </DockPanel>
+
     </Grid>
 </Window>
