@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:uc="clr-namespace:Multi_Channel_Image_Tool.User_Controls"
-        Icon="Icon.ico" mc:Ignorable="d"
-        Title="Multi-Channel Image Tool" Height="350" Width="600" MinHeight="350" MinWidth="600">
+        Icon="Icon.ico" mc:Ignorable="d" ResizeMode="CanResize"
+        Title="Multi-Channel Image Tool" Height="350" Width="500" MinHeight="350" MinWidth="500" MaxHeight="350">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -13,7 +13,7 @@
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
 
-        <TabControl Margin="10" Grid.Row="0">
+        <TabControl Name="ModulePicker" Margin="10" Grid.Row="0" SelectionChanged="OnSelectedModuleChanged">
 
             <TabItem Header="Combine">
                 <Grid>
@@ -22,7 +22,7 @@
                         <ColumnDefinition Width="1.5*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    
+
                     <TabControl TabStripPlacement="Bottom" >
                         <TabControl.Resources>
                             <Style TargetType="{x:Type TabPanel}">
@@ -103,26 +103,13 @@
                     <Grid Grid.Column="1">
 
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*" MaxHeight="20"/>
                             <RowDefinition Height="*"/>
-                            <RowDefinition Height="*" MaxHeight="30"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Text="Final Result" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Final Result" FontWeight="Bold" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 10"/>
 
-                        <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Margin="15 10 15 15">
-                            <Image Name="Combine_FinalPreviewImage" Stretch="Uniform" Source="Icon.ico" Margin="5">
-                                <Image.ToolTip>
-                                    <ToolTip>
-                                        <ToolTip.Content>
-                                            <Image Name="Combine_FinalPreviewImageTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
-                                        </ToolTip.Content>
-                                    </ToolTip>
-                                </Image.ToolTip>
-                            </Image>
-                        </Border>
-
-                        <Button Name="Combine_SaveAss" Focusable="False" Content="Save As..." IsEnabled="False" Grid.Row="2" Margin="15 0 15 10"/>
+                        <Button Name="Combine_SaveAs" Focusable="False" Content="Save As..." IsEnabled="False" Grid.Row="2" VerticalAlignment="Top" Margin="15 10" Click="Combine_TryToSave"/>
 
                     </Grid>
                 </Grid>
@@ -138,10 +125,10 @@
                     </Grid.RowDefinitions>
 
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/> 
-                        <ColumnDefinition Width="*"/> 
-                        <ColumnDefinition Width="*"/> 
-                        <ColumnDefinition Width="*"/> 
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <Button Grid.Row="0" Grid.ColumnSpan="4" Margin="10 5" Content="Pick New Target"/>
@@ -202,8 +189,8 @@
             </TabItem>
         </TabControl>
 
-        <DockPanel Grid.Row="1" Margin="10 5" VerticalAlignment="Center">
-            <TextBlock Foreground="Red" Text="I AM ERROR" VerticalAlignment="Center"/>
+        <DockPanel Grid.Row="1" Margin="10 0" VerticalAlignment="Center">
+            <TextBlock Name="ErrorLabel" Foreground="Red" Text="I AM ERROR" VerticalAlignment="Top"/>
         </DockPanel>
 
     </Grid>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -14,6 +14,12 @@ namespace Multi_Channel_Image_Tool
 {
     public static class ImageUtility
     {
+        public static class EditorImages
+        {
+            public static ImageSource GetImageFromFolder(string imagePath) => new BitmapImage(new Uri($"pack://application:,,,{imagePath}", UriKind.RelativeOrAbsolute));
+            public static ImageSource Error => GetImageFromFolder("/Images/Error.png");
+        }
+
         public static class Validation
         {
             private const string _PNG = ".png";
@@ -25,11 +31,17 @@ namespace Multi_Channel_Image_Tool
 
         public static class ImageGeneration
         {
+            #region Internal
+
             [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool DeleteObject([In] IntPtr hObject);
 
-            private static ImageSource ImageSourceFromBitmap(Bitmap bmp)
+            #endregion Internal
+
+            #region Converters
+
+            private static ImageSource BitmapToImageSource(Bitmap bmp)
             {
                 var handle = bmp.GetHbitmap();
                 try
@@ -39,16 +51,43 @@ namespace Multi_Channel_Image_Tool
                 finally { DeleteObject(handle); }
             }
 
+            private static Bitmap BitmapSourceToBitmap(BitmapSource source)
+            {
+                int width = source.PixelWidth;
+                int height = source.PixelHeight;
+                int stride = width * ((source.Format.BitsPerPixel + 7) / 8);
+                IntPtr ptr = IntPtr.Zero;
+                try
+                {
+                    ptr = Marshal.AllocHGlobal(height * stride);
+                    source.CopyPixels(new Int32Rect(0, 0, width, height), ptr, height * stride, stride);
+                    using (var btm = new System.Drawing.Bitmap(width, height, stride, PixelFormat.Format1bppIndexed, ptr))
+                    {
+                        // Clone the bitmap so that we can dispose it and
+                        // release the unmanaged memory at ptr
+                        return new Bitmap(btm);
+                    }
+                }
+                finally
+                {
+                    if (ptr != IntPtr.Zero)
+                        Marshal.FreeHGlobal(ptr);
+                }
+            }
+
+            #endregion Converters
+
             public static ImageSource GenerateSolidColor(int r, int g, int b, int a)
             {
                 Bitmap solidColor = new Bitmap(1, 1, PixelFormat.Format32bppRgb);
                 solidColor.SetPixel(0, 0, Color.FromArgb(a, r, g, b));
 
-                return ImageSourceFromBitmap(solidColor);
+                return BitmapToImageSource(solidColor);
             }
 
             public static ImageSource ExtractChannel(string imagePath, EChannel channelToExtract, EChannel finalChannel)
             {
+                if (!ImageUtility.Validation.IsValidImage(imagePath)) { return ImageUtility.EditorImages.Error; }
                 var bitmap = new Bitmap(imagePath);
                 var extractedBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppRgb);
 
@@ -56,7 +95,7 @@ namespace Multi_Channel_Image_Tool
                 {
                     for (int x = 0; x < bitmap.Width; x++)
                     {
-                        Color pixelColor  = bitmap.GetPixel(x,y);
+                        Color pixelColor = bitmap.GetPixel(x, y);
 
                         int intensity;
 
@@ -77,7 +116,7 @@ namespace Multi_Channel_Image_Tool
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(channelToExtract), channelToExtract, null);
                         }
-                        
+
                         if (intensity > 0 & intensity <= 255)
                         {
                             switch (finalChannel)
@@ -109,7 +148,8 @@ namespace Multi_Channel_Image_Tool
                 }
 
                 bitmap.Dispose();
-                return ImageSourceFromBitmap(extractedBitmap);
+                return BitmapToImageSource(extractedBitmap);
+            }
             }
         }
     }

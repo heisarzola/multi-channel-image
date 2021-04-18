@@ -73,6 +73,7 @@
     </Compile>
     <Compile Include="Events\ValueChangedEventArgs.cs" />
     <Compile Include="Utilities\Extensions.cs" />
+    <Compile Include="Utilities\Helpers.cs" />
     <Compile Include="Utilities\ImageUtility.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -131,6 +132,8 @@
   <ItemGroup>
     <Resource Include="Images\Folder.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\Error.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

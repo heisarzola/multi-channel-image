@@ -63,7 +63,7 @@ namespace Multi_Channel_Image_Tool
                     switch (_pickerType)
                     {
                         case EChannelPickerType.PickTexture:
-                            if (ImageUtility.Validation.IsValidImage(_targetImagePath))
+                            if (!ImageUtility.Validation.IsValidImage(_targetImagePath))
                             {
                                 errors.Add($"No valid image has been picked for channel {_previewChannel.ToString()}.");
                             }
