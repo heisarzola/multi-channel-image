@@ -13,12 +13,21 @@
             <RowDefinition Height="*" MaxHeight="60"/>
         </Grid.RowDefinitions>
 
-        <ComboBox Name="PickerType" SelectionChanged="OnSelectedPickerTypeChanged" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Center" HorizontalContentAlignment="Center">
-            <ComboBox.Items>
-                <ComboBoxItem HorizontalContentAlignment="Center">Pick Texture</ComboBoxItem>
-                <ComboBoxItem HorizontalContentAlignment="Center">Set Uniform Value</ComboBoxItem>
-            </ComboBox.Items>
-        </ComboBox>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="How To Set Channel" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <ComboBox Grid.Column="1" Name="PickerTypeDropdown" SelectionChanged="OnSelectedPickerTypeChanged" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Center" HorizontalContentAlignment="Center">
+                <ComboBox.Items>
+                    <ComboBoxItem HorizontalContentAlignment="Center">Pick Texture</ComboBoxItem>
+                    <ComboBoxItem HorizontalContentAlignment="Center">Set Uniform Value</ComboBoxItem>
+                </ComboBox.Items>
+            </ComboBox>
+        </Grid>
 
         <Separator Grid.Row="1" VerticalAlignment="Top" Margin="15 0" />
 
@@ -41,7 +50,7 @@
 
                 <Button Grid.Column="1" Width="30" Focusable="False" Margin="5,0" Click="PickImage">
                     <Button.Content>
-                        <Image Source="../Images/Folder.png" Margin="5"/>
+                        <Image Source="../Images/Folder.png" Margin="5" RenderOptions.BitmapScalingMode="Fant"/>
                     </Button.Content>
                 </Button>
 
@@ -49,7 +58,7 @@
 
                 <Button Grid.Column="3" Width="30" Focusable="False" Margin="5,0" Click="TryRefreshImage">
                     <Button.Content>
-                        <Image Source="../Images/Refresh.png" Margin="3"/>
+                        <Image Source="../Images/Refresh.png" Margin="3" RenderOptions.BitmapScalingMode="Fant"/>
                     </Button.Content>
                 </Button>
 

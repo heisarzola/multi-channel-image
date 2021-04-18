@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Multi_Channel_Image_Tool.Interfaces;
 
 namespace Multi_Channel_Image_Tool
 {
@@ -25,13 +24,15 @@ namespace Multi_Channel_Image_Tool
 
     namespace User_Controls
     {
-        public partial class ImageChannelPicker : UserControl
+        public partial class ImageChannelPicker : UserControl, ICanHaveErrors, IHaveStates
         {
             //------------------------------------------------------------------------------------//
             /*----------------------------------- FIELDS -----------------------------------------*/
             //------------------------------------------------------------------------------------//
+            
+            public event EventHandler StateChanged;
 
-            private EChannelPickerType _pickerType = EChannelPickerType.PickTexture;
+            private EChannelPickerType _pickerType = EChannelPickerType.SetUniformValue;
             private EChannel _channelToExtract = EChannel.R;
             private EChannel _previewChannel = EChannel.R;
             private string _targetImagePath;
@@ -40,34 +41,42 @@ namespace Multi_Channel_Image_Tool
             //------------------------------------------------------------------------------------//
             /*--------------------------------- PROPERTIES ---------------------------------------*/
             //------------------------------------------------------------------------------------//
-
-            private int UniformValueDefault
-            {
-                get
-                {
-                    switch (_previewChannel)
-                    {
-                        case EChannel.R:
-                        case EChannel.G:
-                        case EChannel.B:
-                            return 0;
-                        case EChannel.A:
-                            return 255;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-            }
-
+            
             public EChannel PreviewChannel
             {
                 get => _previewChannel;
                 set => _previewChannel = value;
             }
 
-            public ImageSource Preview => ImageUtility.Validation.IsValidImage(_targetImagePath) ? _extractedPreview : null;
+            public EChannelPickerType PickerType => _pickerType;
+
+            public ImageSource Preview => ImageUtility.Validation.IsValidImage(_targetImagePath) || _pickerType == EChannelPickerType.SetUniformValue ? _extractedPreview : null;
 
             public string SelectedImagePath => _targetImagePath;
+
+            public List<string> Errors
+            {
+                get
+                {
+                    List<string> errors = new List<string>();
+
+                    switch (_pickerType)
+                    {
+                        case EChannelPickerType.PickTexture:
+                            if (ImageUtility.Validation.IsValidImage(_targetImagePath))
+                            {
+                                errors.Add($"No valid image has been picked for channel {_previewChannel.ToString()}.");
+                            }
+                            break;
+                        case EChannelPickerType.SetUniformValue:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    return errors;
+                }
+            }
 
             //------------------------------------------------------------------------------------//
             /*---------------------------------- METHODS -----------------------------------------*/
@@ -76,19 +85,37 @@ namespace Multi_Channel_Image_Tool
             public ImageChannelPicker()
             {
                 InitializeComponent();
-                UpdateVisualElements();
-                InitializeElements();
-                UniformValueSlider.SliderValueChanged += (sender, args) =>
+                bool firstLoad = false;
+                Loaded += (sender, args) =>
                 {
-                    UpdatePreviews();
+                    if (!firstLoad)
+                    {
+                        firstLoad = true;
+                        InitializeElements();
+                        UpdateVisualElements();
+                        UniformValueSlider.SliderValueChanged += (s, a) =>
+                        {
+                            UpdatePreviews();
+                            OnStateChanged();
+                        };
+                    }
                 };
+            }
+
+            private void OnStateChanged()
+            {
+                if (StateChanged != null)
+                {
+                    StateChanged(this, EventArgs.Empty);
+                }
             }
 
             private void InitializeElements()
             {
-                UniformValueSlider.Value = UniformValueDefault;
-                PickerType.SelectedIndex = 0;
-                ChannelToExtract.SelectedIndex = 0;
+                UniformValueSlider.Value = 255;
+                PickerTypeDropdown.SelectedIndex = 1;
+                _channelToExtract = PreviewChannel;
+                ChannelToExtract.SelectedIndex = (int)_channelToExtract;
             }
 
             private void UpdateVisualElements()
@@ -144,8 +171,9 @@ namespace Multi_Channel_Image_Tool
 
             private void OnSelectedPickerTypeChanged(object sender, SelectionChangedEventArgs e)
             {
-                _pickerType = (EChannelPickerType)PickerType.SelectedIndex;
+                _pickerType = (EChannelPickerType)PickerTypeDropdown.SelectedIndex;
                 UpdateVisualElements();
+                OnStateChanged();
             }
 
             private void PickImage(object sender, RoutedEventArgs e)
@@ -167,6 +195,7 @@ namespace Multi_Channel_Image_Tool
                         _targetImagePath = string.Empty;
                     }
                     UpdatePreviews();
+                    OnStateChanged();
                 }
             }
 
@@ -174,6 +203,7 @@ namespace Multi_Channel_Image_Tool
             {
                 _channelToExtract = (EChannel)ChannelToExtract.SelectedIndex;
                 UpdatePreviews();
+                OnStateChanged();
             }
 
             private void TryRefreshImage(object sender, RoutedEventArgs e)
@@ -187,6 +217,7 @@ namespace Multi_Channel_Image_Tool
                     MessageBox.Show("The provided file path does not point to a valid image.");
                 }
                 UpdatePreviews();
+                OnStateChanged();
             }
         }
     }

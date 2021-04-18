@@ -32,27 +32,71 @@
 
                         <TabItem>
                             <TabItem.Header>
-                                <TextBlock Text="R" Foreground="Red" FontWeight="Bold" />
+                                <WrapPanel>
+                                    <TextBlock Text="R" Foreground="Red" FontWeight="Bold" Margin="3 0"/>
+                                    <Image x:Name="Combine_TabRPreview" Height="13" Width="13" Source="Icon.ico" Stretch="Fill" Visibility="Collapsed">
+                                        <Image.ToolTip>
+                                            <ToolTip>
+                                                <ToolTip.Content>
+                                                    <Image Name="Combine_TabRPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200" Stretch="Fill"/>
+                                                </ToolTip.Content>
+                                            </ToolTip>
+                                        </Image.ToolTip>
+                                    </Image>
+                                </WrapPanel>
                             </TabItem.Header>
-                            <uc:ImageChannelPicker PreviewChannel="R"/>
+                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerR" PreviewChannel="R"/>
                         </TabItem>
                         <TabItem>
                             <TabItem.Header>
-                                <TextBlock Text="G" Foreground="Green" FontWeight="Bold" />
+                                <WrapPanel>
+                                    <TextBlock Text="G" Foreground="Green" FontWeight="Bold" Margin="3 0"/>
+                                    <Image x:Name="Combine_TabGPreview" Height="13" Width="13" Source="Icon.ico" Stretch="Fill" Visibility="Collapsed">
+                                        <Image.ToolTip>
+                                            <ToolTip>
+                                                <ToolTip.Content>
+                                                    <Image Name="Combine_TabGPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200" Stretch="Fill"/>
+                                                </ToolTip.Content>
+                                            </ToolTip>
+                                        </Image.ToolTip>
+                                    </Image>
+                                </WrapPanel>
                             </TabItem.Header>
-                            <uc:ImageChannelPicker PreviewChannel="G"/>
+                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerG" PreviewChannel="G"/>
                         </TabItem>
                         <TabItem>
                             <TabItem.Header>
-                                <TextBlock Text="B" Foreground="Blue" FontWeight="Bold" />
+                                <WrapPanel>
+                                    <TextBlock Text="B" Foreground="Blue" FontWeight="Bold" Margin="3 0"/>
+                                    <Image x:Name="Combine_TabBPreview" Height="13" Width="13" Source="Icon.ico" Stretch="Fill" Visibility="Collapsed">
+                                        <Image.ToolTip>
+                                            <ToolTip>
+                                                <ToolTip.Content>
+                                                    <Image Name="Combine_TabBPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200" Stretch="Fill"/>
+                                                </ToolTip.Content>
+                                            </ToolTip>
+                                        </Image.ToolTip>
+                                    </Image>
+                                </WrapPanel>
                             </TabItem.Header>
-                            <uc:ImageChannelPicker PreviewChannel="B"/>
+                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerB" PreviewChannel="B"/>
                         </TabItem>
                         <TabItem>
                             <TabItem.Header>
-                                <TextBlock Text="A" Foreground="Black" FontWeight="Bold" />
+                                <WrapPanel>
+                                    <TextBlock Text="A" Foreground="Black" FontWeight="Bold" Margin="3 0"/>
+                                    <Image x:Name="Combine_TabAPreview" Height="13" Width="13" Source="Icon.ico" Stretch="Fill" Visibility="Collapsed">
+                                        <Image.ToolTip>
+                                            <ToolTip>
+                                                <ToolTip.Content>
+                                                    <Image Name="Combine_TabAPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200" Stretch="Fill"/>
+                                                </ToolTip.Content>
+                                            </ToolTip>
+                                        </Image.ToolTip>
+                                    </Image>
+                                </WrapPanel>
                             </TabItem.Header>
-                            <uc:ImageChannelPicker PreviewChannel="A"/>
+                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerA" PreviewChannel="A"/>
                         </TabItem>
                     </TabControl>
 
@@ -67,18 +111,18 @@
                         <TextBlock Text="Final Result" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
                         <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Margin="15 10 15 15">
-                            <Image Name="FinalPreviewImage" Stretch="Uniform" Source="Icon.ico" Margin="5">
+                            <Image Name="Combine_FinalPreviewImage" Stretch="Uniform" Source="Icon.ico" Margin="5">
                                 <Image.ToolTip>
                                     <ToolTip>
                                         <ToolTip.Content>
-                                            <Image Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                            <Image Name="Combine_FinalPreviewImageTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
                                         </ToolTip.Content>
                                     </ToolTip>
                                 </Image.ToolTip>
                             </Image>
                         </Border>
 
-                        <Button Focusable="False" Content="Save As..." IsEnabled="False" Grid.Row="2" Margin="15 0 15 10"/>
+                        <Button Name="Combine_SaveAss" Focusable="False" Content="Save As..." IsEnabled="False" Grid.Row="2" Margin="15 0 15 10"/>
 
                     </Grid>
                 </Grid>

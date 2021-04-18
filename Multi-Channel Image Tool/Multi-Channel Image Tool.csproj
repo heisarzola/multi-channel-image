@@ -62,12 +62,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Modules\CombineTab.cs" />
+    <Compile Include="Interfaces\ICanHaveErrors.cs" />
+    <Compile Include="Interfaces\IHaveStates.cs" />
     <Compile Include="User Controls\ImageChannelPicker.xaml.cs">
       <DependentUpon>ImageChannelPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="User Controls\IntSlider.xaml.cs">
       <DependentUpon>IntSlider.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Events\ValueChangedEventArgs.cs" />
     <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\ImageUtility.cs" />
     <Page Include="MainWindow.xaml">
@@ -127,5 +131,6 @@
   <ItemGroup>
     <Resource Include="Images\Folder.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
