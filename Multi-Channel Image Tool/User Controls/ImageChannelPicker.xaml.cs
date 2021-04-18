@@ -231,6 +231,12 @@ namespace Multi_Channel_Image_Tool
                 UpdatePreviews();
                 OnStateChanged();
             }
+
+            private void OnTextChanged(object sender, TextChangedEventArgs e)
+            {
+                _targetImagePath = TargetImagePath.Text;
+                OnStateChanged();
+            }
         }
     }
 }

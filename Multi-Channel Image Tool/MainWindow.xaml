@@ -103,13 +103,30 @@
                     <Grid Grid.Column="1">
 
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="0.5*"/>
                             <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="0.5*"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Text="Final Result" FontWeight="Bold" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 10"/>
+                        <Button Name="Combine_UpdateFinalResult" Grid.Row="0" Focusable="False" Margin="15,15,15,18" Padding="10 5" VerticalAlignment="Center" Click="Combine_UpdatePreview">
+                            <Button.Content>
+                                <TextBlock Text="Generate Final Preview" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Button.Content>
+                        </Button>
 
-                        <Button Name="Combine_SaveAs" Focusable="False" Content="Save As..." IsEnabled="False" Grid.Row="2" VerticalAlignment="Top" Margin="15 10" Click="Combine_TryToSave"/>
+                        <Border Grid.Row="1" Margin="15 0" BorderThickness="1" BorderBrush="DarkGray">
+                            <Image Name="Combine_FinalPreview" Source="Icon.ico" Stretch="Uniform">
+                                <Image.ToolTip>
+                                    <ToolTip>
+                                        <ToolTip.Content>
+                                            <Image Name="Combine_FinalPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200" Stretch="Fill"/>
+                                        </ToolTip.Content>
+                                    </ToolTip>
+                                </Image.ToolTip>
+                            </Image>
+                        </Border>
+
+                        <Button Name="Combine_SaveAs" Focusable="False" Content="Save As..." IsEnabled="False" Grid.Row="2" VerticalAlignment="Center" Margin="15 10" Click="Combine_TryToSave"/>
 
                     </Grid>
                 </Grid>

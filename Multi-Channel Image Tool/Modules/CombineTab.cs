@@ -38,6 +38,22 @@ namespace Multi_Channel_Image_Tool
             }
         }
 
+        private bool AreThereErrors
+        {
+            get
+            {
+                var errors = Combine_Errors;
+                if (errors.Count > 0)
+                {
+                    MessageBox.Show("Some referenced images have changed, and are now invalid, please correct these and try again.");
+                    Combine_UpdateVisualElements();
+                    OnMainStateChanged();
+                    return true;
+                }
+                return false;
+            }
+        }
+
         //------------------------------------------------------------------------------------//
         /*---------------------------------- METHODS -----------------------------------------*/
         //------------------------------------------------------------------------------------//
@@ -78,21 +94,28 @@ namespace Multi_Channel_Image_Tool
             var errors = Combine_Errors;
 
             // Allow/Disallow Saving
-            Combine_SaveAs.IsEnabled = errors.Count == 0;
+            Combine_UpdateFinalResult.IsEnabled = Combine_SaveAs.IsEnabled = errors.Count == 0;
+        }
+
+        private void Combine_UpdatePreview(object sender, RoutedEventArgs e)
+        {
+            if (AreThereErrors)
+            {
+                Combine_FinalPreviewTooltip.Source = Combine_FinalPreview.Source = ImageUtility.EditorImages.Error;
+                return;
+            }
+
+            ImageSource result = ImageUtility.ImageGeneration.CombineChannelsAndGetSource(Combine_ChannelPickerR.ChannelImage, Combine_ChannelPickerG.ChannelImage,
+                Combine_ChannelPickerB.ChannelImage, Combine_ChannelPickerA.ChannelImage);
+            Combine_FinalPreview.Source = result;
+            Combine_FinalPreviewTooltip.Source = result;
         }
 
         private void Combine_TryToSave(object sender, RoutedEventArgs e) => Combine_TryToSave();
 
         private void Combine_TryToSave()
         {
-            var errors = Combine_Errors;
-            if (errors.Count > 0)
-            {
-                MessageBox.Show("Some referenced images have changed, and are now invalid, please correct these and try again.");
-                Combine_UpdateVisualElements();
-                OnMainStateChanged();
-                return;
-            }
+            if (AreThereErrors) { return; }
 
             CommonSaveFileDialog dialog = new CommonSaveFileDialog
             {

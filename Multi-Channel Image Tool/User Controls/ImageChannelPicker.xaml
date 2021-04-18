@@ -54,7 +54,7 @@
                     </Button.Content>
                 </Button>
 
-                <TextBox Name="TargetImagePath" Grid.Column="2" VerticalContentAlignment="Center"/>
+                <TextBox Name="TargetImagePath" Grid.Column="2" VerticalContentAlignment="Center" TextChanged="OnTextChanged"/>
 
                 <Button Grid.Column="3" Width="30" Focusable="False" Margin="5,0" Click="TryRefreshImage">
                     <Button.Content>
