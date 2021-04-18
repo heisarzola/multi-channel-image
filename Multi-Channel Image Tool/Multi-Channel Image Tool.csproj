@@ -62,6 +62,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Additional Windows\PopupTextWindow.xaml.cs">
+      <DependentUpon>PopupTextWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Modules\CombineTab.cs" />
     <Compile Include="Interfaces\ICanHaveErrors.cs" />
     <Compile Include="Interfaces\IHaveStates.cs" />
@@ -75,6 +78,10 @@
     <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\Helpers.cs" />
     <Compile Include="Utilities\ImageUtility.cs" />
+    <Page Include="Additional Windows\PopupTextWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -135,5 +142,6 @@
   <ItemGroup>
     <Resource Include="Images\Error.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

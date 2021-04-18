@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:uc="clr-namespace:Multi_Channel_Image_Tool.User_Controls"
         Icon="Icon.ico" mc:Ignorable="d" ResizeMode="CanResize"
-        Title="Multi-Channel Image Tool" Height="350" Width="500" MinHeight="350" MinWidth="500" MaxHeight="350">
+        Title="Multi-Channel Image Tool" Height="350" Width="600" MinHeight="350" MinWidth="600" MaxHeight="350">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -45,7 +45,7 @@
                                     </Image>
                                 </WrapPanel>
                             </TabItem.Header>
-                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerR" PreviewChannel="R"/>
+                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerR" TargetChannel="R"/>
                         </TabItem>
                         <TabItem>
                             <TabItem.Header>
@@ -62,7 +62,7 @@
                                     </Image>
                                 </WrapPanel>
                             </TabItem.Header>
-                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerG" PreviewChannel="G"/>
+                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerG" TargetChannel="G"/>
                         </TabItem>
                         <TabItem>
                             <TabItem.Header>
@@ -79,7 +79,7 @@
                                     </Image>
                                 </WrapPanel>
                             </TabItem.Header>
-                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerB" PreviewChannel="B"/>
+                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerB" TargetChannel="B"/>
                         </TabItem>
                         <TabItem>
                             <TabItem.Header>
@@ -96,7 +96,7 @@
                                     </Image>
                                 </WrapPanel>
                             </TabItem.Header>
-                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerA" PreviewChannel="A"/>
+                            <uc:ImageChannelPicker x:Name="Combine_ChannelPickerA" TargetChannel="A"/>
                         </TabItem>
                     </TabControl>
 

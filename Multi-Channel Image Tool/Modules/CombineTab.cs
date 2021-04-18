@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
@@ -55,7 +56,7 @@ namespace Multi_Channel_Image_Tool
             Combine_ChannelPickerB.StateChanged += (sender, args) => { Combine_UpdateVisualElements(); OnMainStateChanged(); };
             Combine_ChannelPickerA.StateChanged += (sender, args) => { Combine_UpdateVisualElements(); OnMainStateChanged(); };
         }
-        
+
         private void Combine_UpdateVisualElements()
         {
             // Update Mini Tab Thumbnails
@@ -75,7 +76,7 @@ namespace Multi_Channel_Image_Tool
             Combine_TabAPreview.Visibility = Combine_ChannelPickerA.Preview == null ? Visibility.Collapsed : Visibility.Visible;
 
             var errors = Combine_Errors;
-            
+
             // Allow/Disallow Saving
             Combine_SaveAs.IsEnabled = errors.Count == 0;
         }
@@ -93,15 +94,26 @@ namespace Multi_Channel_Image_Tool
                 return;
             }
 
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog
+            CommonSaveFileDialog dialog = new CommonSaveFileDialog
             {
-                IsFolderPicker = false,
-                DefaultFileName = "Output.png",
-                DefaultExtension = ".png"
+                DefaultFileName = "Output",
+                DefaultExtension = "png",
+                Filters = { new CommonFileDialogFilter("PNG File", "png") }
             };
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                // TODO Combine and save
+                try
+                {
+                    Bitmap combinedImage = ImageUtility.ImageGeneration.CombineChannels(Combine_ChannelPickerR.ChannelImage, Combine_ChannelPickerG.ChannelImage,
+                         Combine_ChannelPickerB.ChannelImage, Combine_ChannelPickerA.ChannelImage);
+                    combinedImage.Save(dialog.FileName);
+
+                    MessageBox.Show("Image successfully generated and saved.");
+                }
+                catch
+                {
+                    MessageBox.Show("An error has occurred generating and saving the final image, no image was saved. Please check this application has the required permissions to read/write the images.");
+                }
             }
             else
             {

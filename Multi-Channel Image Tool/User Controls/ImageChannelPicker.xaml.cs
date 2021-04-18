@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -34,7 +35,7 @@ namespace Multi_Channel_Image_Tool
 
             private EChannelPickerType _pickerType = EChannelPickerType.SetUniformValue;
             private EChannel _channelToExtract = EChannel.R;
-            private EChannel _previewChannel = EChannel.R;
+            private EChannel _targetChannel = EChannel.R;
             private string _targetImagePath;
             private ImageSource _extractedPreview;
 
@@ -42,17 +43,44 @@ namespace Multi_Channel_Image_Tool
             /*--------------------------------- PROPERTIES ---------------------------------------*/
             //------------------------------------------------------------------------------------//
             
-            public EChannel PreviewChannel
+            public EChannel TargetChannel
             {
-                get => _previewChannel;
-                set => _previewChannel = value;
+                get => _targetChannel;
+                set => _targetChannel = value;
             }
 
             public EChannelPickerType PickerType => _pickerType;
 
             public ImageSource Preview => ImageUtility.Validation.IsValidImage(_targetImagePath) || _pickerType == EChannelPickerType.SetUniformValue ? _extractedPreview : null;
 
-            public string SelectedImagePath => _targetImagePath;
+            public Bitmap ChannelImage
+            {
+                get
+                {
+                    switch (_pickerType)
+                    {
+                        case EChannelPickerType.PickTexture:
+                            return ImageUtility.ImageGeneration.ExtractChannel(_targetImagePath, _channelToExtract, _targetChannel);
+                        case EChannelPickerType.SetUniformValue:
+                            int pickerValue = UniformValueSlider.Value;
+                            switch (_targetChannel)
+                            {
+                                case EChannel.R:
+                                    return ImageUtility.ImageGeneration.GenerateSolidColor(pickerValue, 0, 0, 255);
+                                case EChannel.G:
+                                    return ImageUtility.ImageGeneration.GenerateSolidColor(0, pickerValue, 0, 255);
+                                case EChannel.B:
+                                    return ImageUtility.ImageGeneration.GenerateSolidColor(0, 0, pickerValue, 255);
+                                case EChannel.A:
+                                    return ImageUtility.ImageGeneration.GenerateSolidColor(pickerValue, pickerValue, pickerValue, pickerValue);
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
 
             public List<string> Errors
             {
@@ -65,7 +93,7 @@ namespace Multi_Channel_Image_Tool
                         case EChannelPickerType.PickTexture:
                             if (!ImageUtility.Validation.IsValidImage(_targetImagePath))
                             {
-                                errors.Add($"No valid image has been picked for channel {_previewChannel.ToString()}.");
+                                errors.Add($"No valid image has been picked for channel {_targetChannel.ToString()}.");
                             }
                             break;
                         case EChannelPickerType.SetUniformValue:
@@ -114,7 +142,7 @@ namespace Multi_Channel_Image_Tool
             {
                 UniformValueSlider.Value = 255;
                 PickerTypeDropdown.SelectedIndex = 1;
-                _channelToExtract = PreviewChannel;
+                _channelToExtract = TargetChannel;
                 ChannelToExtract.SelectedIndex = (int)_channelToExtract;
             }
 
@@ -139,31 +167,14 @@ namespace Multi_Channel_Image_Tool
                 {
                     case EChannelPickerType.PickTexture:
                         if (string.IsNullOrEmpty(_targetImagePath)) { return; }
-                        _extractedPreview = ImageUtility.ImageGeneration.ExtractChannel(_targetImagePath, _channelToExtract, _previewChannel);
                         break;
                     case EChannelPickerType.SetUniformValue:
-                        int pickerValue = UniformValueSlider.Value;
-                        switch (_previewChannel)
-                        {
-                            case EChannel.R:
-                                _extractedPreview = ImageUtility.ImageGeneration.GenerateSolidColor(pickerValue, 0, 0, 255);
-                                break;
-                            case EChannel.G:
-                                _extractedPreview = ImageUtility.ImageGeneration.GenerateSolidColor(0, pickerValue, 0, 255);
-                                break;
-                            case EChannel.B:
-                                _extractedPreview = ImageUtility.ImageGeneration.GenerateSolidColor(0, 0, pickerValue, 255);
-                                break;
-                            case EChannel.A:
-                                _extractedPreview = ImageUtility.ImageGeneration.GenerateSolidColor(pickerValue, pickerValue, pickerValue, pickerValue);
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
+                _extractedPreview = ImageUtility.ImageGeneration.BitmapToImageSource(ChannelImage);
 
                 PreviewImage.Source = _extractedPreview;
                 PreviewImageTooltip.Source = _extractedPreview;
@@ -180,7 +191,8 @@ namespace Multi_Channel_Image_Tool
             {
                 CommonOpenFileDialog dialog = new CommonOpenFileDialog
                 {
-                    IsFolderPicker = false
+                    IsFolderPicker = false,
+                    Filters = { new CommonFileDialogFilter("Image", ImageUtility.Validation._VALID_EXTENSIONS_AS_STRING_LIST) }
                 };
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {

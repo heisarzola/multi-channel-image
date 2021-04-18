@@ -1,11 +1,15 @@
-using System;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
+using Multi_Channel_Image_Tool.Additional_Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using Color = System.Drawing.Color;
 using Path = System.IO.Path;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
@@ -24,6 +28,7 @@ namespace Multi_Channel_Image_Tool
         {
             private const string _PNG = ".png";
             private static readonly string[] _VALID_EXTENSIONS = new[] { ".jpg", ".jpeg", _PNG };
+            public const string _VALID_EXTENSIONS_AS_STRING_LIST = "png, jpg, jpeg";
 
             public static bool IsValidImage(string imagePath) => File.Exists(imagePath) && _VALID_EXTENSIONS.Contains(Path.GetExtension(imagePath));
             public static bool ImageHasTransparency(string imagePath) => Path.GetExtension(imagePath).Equals(_PNG);
@@ -41,7 +46,7 @@ namespace Multi_Channel_Image_Tool
 
             #region Converters
 
-            private static ImageSource BitmapToImageSource(Bitmap bmp)
+            public static ImageSource BitmapToImageSource(Bitmap bmp)
             {
                 var handle = bmp.GetHbitmap();
                 try
@@ -77,17 +82,23 @@ namespace Multi_Channel_Image_Tool
 
             #endregion Converters
 
-            public static ImageSource GenerateSolidColor(int r, int g, int b, int a)
+            public static ImageSource GenerateSolidColorAndGetSource(int r, int g, int b, int a) => BitmapToImageSource(GenerateSolidColor(r, g, b, a));
+
+            public static Bitmap GenerateSolidColor(int r, int g, int b, int a)
             {
                 Bitmap solidColor = new Bitmap(1, 1, PixelFormat.Format32bppRgb);
                 solidColor.SetPixel(0, 0, Color.FromArgb(a, r, g, b));
 
-                return BitmapToImageSource(solidColor);
+                return solidColor;
             }
 
-            public static ImageSource ExtractChannel(string imagePath, EChannel channelToExtract, EChannel finalChannel)
+            public static ImageSource ExtractChannelAndGetSource(string imagePath, EChannel channelToExtract, EChannel finalChannel)
+            => BitmapToImageSource(ExtractChannel(imagePath, channelToExtract, finalChannel));
+
+            public static Bitmap ExtractChannel(string imagePath, EChannel channelToExtract, EChannel finalChannel)
             {
-                if (!ImageUtility.Validation.IsValidImage(imagePath)) { return ImageUtility.EditorImages.Error; }
+                if (!ImageUtility.Validation.IsValidImage(imagePath)) { return new Bitmap(1, 1); }
+
                 var bitmap = new Bitmap(imagePath);
                 var extractedBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppRgb);
 
@@ -148,8 +159,94 @@ namespace Multi_Channel_Image_Tool
                 }
 
                 bitmap.Dispose();
-                return BitmapToImageSource(extractedBitmap);
+                return extractedBitmap;
             }
+
+            private static Color GetPixelRepeatingEdges(Bitmap toExtractColorFrom, int x, int y)
+            {
+                int targetX = x % toExtractColorFrom.Width;
+                int targetY = y % toExtractColorFrom.Height;
+                return toExtractColorFrom.GetPixel(targetX, targetY);
+            }
+
+            public static Bitmap CombineChannels(Bitmap r, Bitmap g, Bitmap b, Bitmap a)
+            {
+                int width = Helpers.Max(r.Width, g.Width, b.Width, a.Width);
+                int height = Helpers.Max(r.Height, g.Height, b.Height, a.Height);
+
+                var merged = new Bitmap(width, height, PixelFormat.Format32bppRgb);
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        int rIntensity = r.GetPixel(x % r.Width, y % r.Height).R;
+                        int gIntensity = g.GetPixel(x % g.Width, y % g.Height).G;
+                        int bIntensity = b.GetPixel(x % b.Width, y % b.Height).B;
+                        int aIntensity = a.GetPixel(x % a.Width, y % a.Height).A;
+
+                        merged.SetPixel(x, y, Color.FromArgb(aIntensity, rIntensity, gIntensity, bIntensity));
+
+                        /*  if (intensity > 0 & intensity <= 255)
+                          {
+                              switch (finalChannel)
+                              {
+                                  case EChannel.R:
+                                      break;
+                                  case EChannel.G:
+                                      extractedBitmap.SetPixel(x, y, Color.FromArgb(255, 0, intensity, 0));
+                                      break;
+                                  case EChannel.B:
+                                      extractedBitmap.SetPixel(x, y, Color.FromArgb(255, 0, 0, intensity));
+                                      break;
+                                  case EChannel.A:
+                                      extractedBitmap.SetPixel(x, y,
+                                          ImageUtility.Validation.ImageHasTransparency(imagePath)
+                                              ? Color.FromArgb(intensity, intensity, intensity, intensity)
+                                              : Color.FromArgb(255, 252, 255, 255));
+                                      break;
+                                  default:
+                                      throw new ArgumentOutOfRangeException(nameof(finalChannel), finalChannel, null);
+                              }
+                          }
+                          else
+                          {
+                              extractedBitmap.SetPixel(x, y, Color.FromArgb(0, 0, 0, 0));
+                          }*/
+                    }
+                }
+
+                return merged;
+
+                /*  bitmap.Dispose();
+                  return BitmapToImageSource(extractedBitmap);
+  
+  
+  
+  
+  
+                  Bitmap result = new Bitmap(width, height, PixelFormat.Format32bppRgb);
+                  PopupTextWindow popupText = new PopupTextWindow
+                  {
+                      PopupText = { Text = "Creating Texture, Please Wait" }
+                  };
+                  popupText.Show();
+  
+                  for (int y = 0; y < height; y++)
+                  {
+                      for (int x = 0; x < width; x++)
+                      {
+                          byte aIntensity = r.GetPixel(x, y).A;
+                          byte rIntensity = r.GetPixel(x, y).R;
+                          byte gIntensity = r.GetPixel(x, y).G;
+                          byte bIntensity = r.GetPixel(x, y).B;
+  
+                          result.SetPixel(x, y, Color.FromArgb(aIntensity, rIntensity, gIntensity, bIntensity));
+                      }
+                  }
+  
+                  popupText.Close();
+                  return result;*/
             }
         }
     }
