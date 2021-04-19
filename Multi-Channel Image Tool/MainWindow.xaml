@@ -108,7 +108,7 @@
                             <RowDefinition Height="0.5*"/>
                         </Grid.RowDefinitions>
 
-                        <Button Name="Combine_UpdateFinalResult" Grid.Row="0" Focusable="False" Margin="15,15,15,18" Padding="10 5" VerticalAlignment="Center" Click="Combine_UpdatePreview">
+                        <Button Name="Combine_UpdateFinalResult" Grid.Row="0" Focusable="False" Margin="15 0 15 19" VerticalAlignment="Center" Click="Combine_UpdatePreview">
                             <Button.Content>
                                 <TextBlock Text="Generate Final Preview" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Button.Content>
@@ -136,7 +136,7 @@
                 <Grid>
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*" MaxHeight="40"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*" MaxHeight="30"/>
                     </Grid.RowDefinitions>
@@ -148,14 +148,14 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Row="0" Grid.ColumnSpan="4" Margin="10 5" Content="Pick New Target"/>
+                    <uc:ImagePicker x:Name="Split_ImagePicker" Grid.ColumnSpan="4" Margin="-5"/>
 
                     <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Grid.Column="0" Margin="10">
-                        <Image Name="FinalRPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
+                        <Image Name="Split_RPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
                             <Image.ToolTip>
                                 <ToolTip>
                                     <ToolTip.Content>
-                                        <Image Name="FinalRPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                        <Image Name="Split_RPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
                                     </ToolTip.Content>
                                 </ToolTip>
                             </Image.ToolTip>
@@ -163,11 +163,11 @@
                     </Border>
 
                     <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Grid.Column="1" Margin="10">
-                        <Image Name="FinalGPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
+                        <Image Name="Split_GPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
                             <Image.ToolTip>
                                 <ToolTip>
                                     <ToolTip.Content>
-                                        <Image Name="FinalGPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                        <Image Name="Split_GPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
                                     </ToolTip.Content>
                                 </ToolTip>
                             </Image.ToolTip>
@@ -175,11 +175,11 @@
                     </Border>
 
                     <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Grid.Column="2" Margin="10">
-                        <Image Name="FinalBPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
+                        <Image Name="Split_BPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
                             <Image.ToolTip>
                                 <ToolTip>
                                     <ToolTip.Content>
-                                        <Image Name="FinalBPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                        <Image Name="Split_BPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
                                     </ToolTip.Content>
                                 </ToolTip>
                             </Image.ToolTip>
@@ -187,21 +187,21 @@
                     </Border>
 
                     <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Row="1" Grid.Column="3" Margin="10">
-                        <Image Name="FinalAPreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
+                        <Image Name="Split_APreview" Source="Icon.ico" Margin="3 3 3 1" Stretch="Uniform">
                             <Image.ToolTip>
                                 <ToolTip>
                                     <ToolTip.Content>
-                                        <Image Name="FinalAPreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
+                                        <Image Name="Split_APreviewTooltip" Source="Icon.ico" MaxHeight="400" MaxWidth="400" MinHeight="200" MinWidth="200"/>
                                     </ToolTip.Content>
                                 </ToolTip>
                             </Image.ToolTip>
                         </Image>
                     </Border>
 
-                    <Button Name="SaveR" Focusable="False" Grid.Row="2" Grid.Column="0" Margin="10 5" Content="Save As..." IsEnabled="False"/>
-                    <Button Name="SaveG" Focusable="False" Grid.Row="2" Grid.Column="1" Margin="10 5" Content="Save As..." IsEnabled="False"/>
-                    <Button Name="SaveB" Focusable="False" Grid.Row="2" Grid.Column="2" Margin="10 5" Content="Save As..." IsEnabled="False"/>
-                    <Button Name="SaveA" Focusable="False" Grid.Row="2" Grid.Column="3" Margin="10 5" Content="Save As..." IsEnabled="False"/>
+                    <Button Name="Split_SaveR" Focusable="False" Grid.Row="2" Grid.Column="0" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveRButton"/>
+                    <Button Name="Split_SaveG" Focusable="False" Grid.Row="2" Grid.Column="1" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveGButton"/>
+                    <Button Name="Split_SaveB" Focusable="False" Grid.Row="2" Grid.Column="2" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveBButton"/>
+                    <Button Name="Split_SaveA" Focusable="False" Grid.Row="2" Grid.Column="3" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveAButton"/>
                 </Grid>
             </TabItem>
         </TabControl>

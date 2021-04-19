@@ -19,6 +19,7 @@ namespace Multi_Channel_Image_Tool
         {
             public static ImageSource GetImageFromFolder(string imagePath) => new BitmapImage(new Uri($"pack://application:,,,{imagePath}", UriKind.RelativeOrAbsolute));
             public static ImageSource Error => GetImageFromFolder("/Images/Error.png");
+            public static ImageSource Icon => GetImageFromFolder("../Icon.ico");
         }
 
         public static class Validation

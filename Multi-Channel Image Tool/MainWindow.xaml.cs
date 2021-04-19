@@ -21,6 +21,8 @@ namespace Multi_Channel_Image_Tool
                 {
                     case 0:
                         return Combine_Errors;
+                    case 1:
+                        return Split_Errors;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -35,8 +37,11 @@ namespace Multi_Channel_Image_Tool
         {
             InitializeComponent();
 
-            Combine_UpdateVisualElements();
             Combine_TrackStates();
+            Split_TrackStates();
+
+            Combine_UpdateVisualElements();
+            Split_UpdateVisualElements();
         }
 
         private void OnMainStateChanged()

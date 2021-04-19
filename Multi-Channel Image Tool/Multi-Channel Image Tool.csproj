@@ -68,8 +68,12 @@
     <Compile Include="Modules\CombineTab.cs" />
     <Compile Include="Interfaces\ICanHaveErrors.cs" />
     <Compile Include="Interfaces\IHaveStates.cs" />
+    <Compile Include="Modules\SplitTab.cs" />
     <Compile Include="User Controls\ImageChannelPicker.xaml.cs">
       <DependentUpon>ImageChannelPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="User Controls\ImagePicker.xaml.cs">
+      <DependentUpon>ImagePicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="User Controls\IntSlider.xaml.cs">
       <DependentUpon>IntSlider.xaml</DependentUpon>
@@ -95,6 +99,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="User Controls\ImageChannelPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="User Controls\ImagePicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

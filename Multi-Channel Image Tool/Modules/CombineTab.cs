@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Media;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Multi_Channel_Image_Tool.Interfaces;
-using Multi_Channel_Image_Tool.User_Controls;
 
 namespace Multi_Channel_Image_Tool
 {
@@ -38,7 +35,7 @@ namespace Multi_Channel_Image_Tool
             }
         }
 
-        private bool AreThereErrors
+        private bool Combine_AreThereErrors
         {
             get
             {
@@ -99,7 +96,7 @@ namespace Multi_Channel_Image_Tool
 
         private void Combine_UpdatePreview(object sender, RoutedEventArgs e)
         {
-            if (AreThereErrors)
+            if (Combine_AreThereErrors)
             {
                 Combine_FinalPreviewTooltip.Source = Combine_FinalPreview.Source = ImageUtility.EditorImages.Error;
                 return;
@@ -115,7 +112,7 @@ namespace Multi_Channel_Image_Tool
 
         private void Combine_TryToSave()
         {
-            if (AreThereErrors) { return; }
+            if (Combine_AreThereErrors) { return; }
 
             CommonSaveFileDialog dialog = new CommonSaveFileDialog
             {
@@ -130,6 +127,7 @@ namespace Multi_Channel_Image_Tool
                     Bitmap combinedImage = ImageUtility.ImageGeneration.CombineChannels(Combine_ChannelPickerR.ChannelImage, Combine_ChannelPickerG.ChannelImage,
                          Combine_ChannelPickerB.ChannelImage, Combine_ChannelPickerA.ChannelImage);
                     combinedImage.Save(dialog.FileName);
+                    Combine_FinalPreviewTooltip.Source = Combine_FinalPreview.Source = ImageUtility.ImageGeneration.BitmapToImageSource(combinedImage);
 
                     MessageBox.Show("Image successfully generated and saved.");
                 }

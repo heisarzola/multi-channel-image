@@ -38,31 +38,8 @@
         <Separator Grid.Row="2" VerticalAlignment="Top" Margin="15 -2 15 0"/>
 
         <StackPanel Grid.Row="1" Grid.Column="0" Name="PickTextureArea" VerticalAlignment="Center" Margin="10">
-            <Grid Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="110"/>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="40"/>
-                </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Target Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
-                <Button Grid.Column="1" Width="30" Focusable="False" Margin="5,0" Click="PickImage">
-                    <Button.Content>
-                        <Image Source="../Images/Folder.png" Margin="5" RenderOptions.BitmapScalingMode="Fant"/>
-                    </Button.Content>
-                </Button>
-
-                <TextBox Name="TargetImagePath" Grid.Column="2" VerticalContentAlignment="Center" TextChanged="OnTextChanged"/>
-
-                <Button Grid.Column="3" Width="30" Focusable="False" Margin="5,0" Click="TryRefreshImage">
-                    <Button.Content>
-                        <Image Source="../Images/Refresh.png" Margin="3" RenderOptions.BitmapScalingMode="Fant"/>
-                    </Button.Content>
-                </Button>
-
-            </Grid>
+            <uc:ImagePicker x:Name="TargetImagePicker"/>
 
             <Grid Margin="10">
                 <Grid.ColumnDefinitions>

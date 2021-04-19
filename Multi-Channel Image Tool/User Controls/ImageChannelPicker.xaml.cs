@@ -30,19 +30,18 @@ namespace Multi_Channel_Image_Tool
             //------------------------------------------------------------------------------------//
             /*----------------------------------- FIELDS -----------------------------------------*/
             //------------------------------------------------------------------------------------//
-            
+
             public event EventHandler StateChanged;
 
             private EChannelPickerType _pickerType = EChannelPickerType.SetUniformValue;
             private EChannel _channelToExtract = EChannel.R;
             private EChannel _targetChannel = EChannel.R;
-            private string _targetImagePath;
             private ImageSource _extractedPreview;
 
             //------------------------------------------------------------------------------------//
             /*--------------------------------- PROPERTIES ---------------------------------------*/
             //------------------------------------------------------------------------------------//
-            
+
             public EChannel TargetChannel
             {
                 get => _targetChannel;
@@ -51,7 +50,7 @@ namespace Multi_Channel_Image_Tool
 
             public EChannelPickerType PickerType => _pickerType;
 
-            public ImageSource Preview => ImageUtility.Validation.IsValidImage(_targetImagePath) || _pickerType == EChannelPickerType.SetUniformValue ? _extractedPreview : null;
+            public ImageSource Preview => ImageUtility.Validation.IsValidImage(TargetImagePath) || _pickerType == EChannelPickerType.SetUniformValue ? _extractedPreview : null;
 
             public Bitmap ChannelImage
             {
@@ -60,7 +59,7 @@ namespace Multi_Channel_Image_Tool
                     switch (_pickerType)
                     {
                         case EChannelPickerType.PickTexture:
-                            return ImageUtility.ImageGeneration.ExtractChannel(_targetImagePath, _channelToExtract, _targetChannel);
+                            return ImageUtility.ImageGeneration.ExtractChannel(TargetImagePath, _channelToExtract, _targetChannel);
                         case EChannelPickerType.SetUniformValue:
                             int pickerValue = UniformValueSlider.Value;
                             switch (_targetChannel)
@@ -91,10 +90,7 @@ namespace Multi_Channel_Image_Tool
                     switch (_pickerType)
                     {
                         case EChannelPickerType.PickTexture:
-                            if (!ImageUtility.Validation.IsValidImage(_targetImagePath))
-                            {
-                                errors.Add($"No valid image has been picked for channel {_targetChannel.ToString()}.");
-                            }
+                            errors.Concat(TargetImagePicker.Errors.ConvertAll(error => $"Image Picker: {errors}"));
                             break;
                         case EChannelPickerType.SetUniformValue:
                             break;
@@ -105,6 +101,8 @@ namespace Multi_Channel_Image_Tool
                     return errors;
                 }
             }
+
+            private string TargetImagePath => TargetImagePicker.SelectedImagePath;
 
             //------------------------------------------------------------------------------------//
             /*---------------------------------- METHODS -----------------------------------------*/
@@ -122,6 +120,11 @@ namespace Multi_Channel_Image_Tool
                         InitializeElements();
                         UpdateVisualElements();
                         UniformValueSlider.SliderValueChanged += (s, a) =>
+                        {
+                            UpdatePreviews();
+                            OnStateChanged();
+                        };
+                        TargetImagePicker.StateChanged += (s, a) =>
                         {
                             UpdatePreviews();
                             OnStateChanged();
@@ -166,7 +169,7 @@ namespace Multi_Channel_Image_Tool
                 switch (_pickerType)
                 {
                     case EChannelPickerType.PickTexture:
-                        if (string.IsNullOrEmpty(_targetImagePath)) { return; }
+                        if (string.IsNullOrEmpty(TargetImagePath)) { return; }
                         break;
                     case EChannelPickerType.SetUniformValue:
                         break;
@@ -187,54 +190,10 @@ namespace Multi_Channel_Image_Tool
                 OnStateChanged();
             }
 
-            private void PickImage(object sender, RoutedEventArgs e)
-            {
-                CommonOpenFileDialog dialog = new CommonOpenFileDialog
-                {
-                    IsFolderPicker = false,
-                    Filters = { new CommonFileDialogFilter("Image", ImageUtility.Validation._VALID_EXTENSIONS_AS_STRING_LIST) }
-                };
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    if (ImageUtility.Validation.IsValidImage(dialog.FileName))
-                    {
-                        _targetImagePath = dialog.FileName;
-                        TargetImagePath.Text = _targetImagePath;
-                    }
-                    else
-                    {
-                        MessageBox.Show("The selected file is not a valid image.");
-                        _targetImagePath = string.Empty;
-                    }
-                    UpdatePreviews();
-                    OnStateChanged();
-                }
-            }
-
             private void OnTargetChannelChanged(object sender, SelectionChangedEventArgs e)
             {
                 _channelToExtract = (EChannel)ChannelToExtract.SelectedIndex;
                 UpdatePreviews();
-                OnStateChanged();
-            }
-
-            private void TryRefreshImage(object sender, RoutedEventArgs e)
-            {
-                if (ImageUtility.Validation.IsValidImage(TargetImagePath.Text))
-                {
-                    _targetImagePath = TargetImagePath.Text;
-                }
-                else
-                {
-                    MessageBox.Show("The provided file path does not point to a valid image.");
-                }
-                UpdatePreviews();
-                OnStateChanged();
-            }
-
-            private void OnTextChanged(object sender, TextChangedEventArgs e)
-            {
-                _targetImagePath = TargetImagePath.Text;
                 OnStateChanged();
             }
         }
