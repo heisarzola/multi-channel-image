@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="Multi_Channel_Image_Tool.User_Controls.ImagePicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Multi_Channel_Image_Tool.User_Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="110"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="40"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="Target Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        <Button Grid.Column="1" Width="30" Focusable="False" Margin="5,0" Click="PickImage">
+            <Button.Content>
+                <Image Source="../Images/Folder.png" Margin="5" RenderOptions.BitmapScalingMode="Fant"/>
+            </Button.Content>
+        </Button>
+
+        <TextBox Name="TargetImagePath" Grid.Column="2" Grid.ColumnSpan="2" VerticalContentAlignment="Center" TextChanged="OnTextChanged"/>
+
+        <Button Grid.Column="3" Width="30" Focusable="False" Margin="5,0" Click="TryRefreshImage" Visibility="Collapsed">
+            <Button.Content>
+                <Image Source="../Images/Refresh.png" Margin="3" RenderOptions.BitmapScalingMode="Fant"/>
+            </Button.Content>
+        </Button>
+
+    </Grid>
+</UserControl>
