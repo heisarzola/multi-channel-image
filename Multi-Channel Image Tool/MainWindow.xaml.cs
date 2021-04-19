@@ -1,28 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Multi_Channel_Image_Tool
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        //------------------------------------------------------------------------------------//
+        /*--------------------------------- PROPERTIES ---------------------------------------*/
+        //------------------------------------------------------------------------------------//
+
+        private List<string> TabErrors
+        {
+            get
+            {
+                switch (ModulePicker.SelectedIndex)
+                {
+                    case 0:
+                        return Combine_Errors;
+                    case 1:
+                        return Split_Errors;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        //------------------------------------------------------------------------------------//
+        /*---------------------------------- METHODS -----------------------------------------*/
+        //------------------------------------------------------------------------------------//
+
         public MainWindow()
         {
             InitializeComponent();
+
+            Combine_TrackStates();
+            Split_TrackStates();
+
+            Combine_UpdateVisualElements();
+            Split_UpdateVisualElements();
+        }
+
+        private void OnMainStateChanged()
+        {
+            UpdateErrorLabel();
+        }
+
+        private void UpdateErrorLabel()
+        {
+            var errors = TabErrors;
+            ErrorLabel.Text = errors.Count == 0 ? string.Empty : errors.First();
+        }
+
+        private void OnSelectedModuleChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateErrorLabel();
         }
     }
 }
