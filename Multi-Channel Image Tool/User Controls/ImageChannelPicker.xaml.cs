@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using Multi_Channel_Image_Tool.Interfaces;
 
 namespace Multi_Channel_Image_Tool
@@ -36,7 +35,9 @@ namespace Multi_Channel_Image_Tool
             private EChannelPickerType _pickerType = EChannelPickerType.SetUniformValue;
             private EChannel _channelToExtract = EChannel.R;
             private EChannel _targetChannel = EChannel.R;
-            private ImageSource _extractedPreview;
+
+            private string _lastSettingsHash;
+            private Bitmap _cachedResult;
 
             //------------------------------------------------------------------------------------//
             /*--------------------------------- PROPERTIES ---------------------------------------*/
@@ -50,34 +51,30 @@ namespace Multi_Channel_Image_Tool
 
             public EChannelPickerType PickerType => _pickerType;
 
-            public ImageSource Preview => ImageUtility.Validation.IsValidImage(TargetImagePath) || _pickerType == EChannelPickerType.SetUniformValue ? _extractedPreview : null;
-
-            public Bitmap ChannelImage
+            public string SettingsHash
             {
                 get
                 {
                     switch (_pickerType)
                     {
                         case EChannelPickerType.PickTexture:
-                            return ImageUtility.ImageGeneration.ExtractChannel(TargetImagePath, _channelToExtract, _targetChannel);
+                            return $"{TargetImagePath}|{_channelToExtract.ToString()}|{_targetChannel.ToString()}";
                         case EChannelPickerType.SetUniformValue:
-                            int pickerValue = UniformValueSlider.Value;
-                            switch (_targetChannel)
-                            {
-                                case EChannel.R:
-                                    return ImageUtility.ImageGeneration.GenerateSolidColor(pickerValue, 0, 0, 255);
-                                case EChannel.G:
-                                    return ImageUtility.ImageGeneration.GenerateSolidColor(0, pickerValue, 0, 255);
-                                case EChannel.B:
-                                    return ImageUtility.ImageGeneration.GenerateSolidColor(0, 0, pickerValue, 255);
-                                case EChannel.A:
-                                    return ImageUtility.ImageGeneration.GenerateSolidColor(pickerValue, pickerValue, pickerValue, pickerValue);
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
+                            return UniformValueSlider.Value.ToString();
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+                }
+            }
+
+            public ImageSource Preview => ImageUtility.Validation.IsValidImage(TargetImagePath) || _pickerType == EChannelPickerType.SetUniformValue ? ImageUtility.ImageGeneration.BitmapToImageSource(ChannelImage) : null;
+
+            public Bitmap ChannelImage
+            {
+                get
+                {
+                    UpdateCachedResult();
+                    return _cachedResult;
                 }
             }
 
@@ -140,6 +137,43 @@ namespace Multi_Channel_Image_Tool
                     StateChanged(this, EventArgs.Empty);
                 }
             }
+            private void UpdateCachedResult()
+            {
+                // Only redo combining the channels if settings changed.
+                if (!SettingsHash.Equals(_lastSettingsHash))
+                {
+                    _lastSettingsHash = SettingsHash;
+
+                    switch (_pickerType)
+                    {
+                        case EChannelPickerType.PickTexture:
+                            _cachedResult= ImageUtility.ImageGeneration.ExtractChannel(TargetImagePath, _channelToExtract, _targetChannel);
+                            break;
+                        case EChannelPickerType.SetUniformValue:
+                            int pickerValue = UniformValueSlider.Value;
+                            switch (_targetChannel)
+                            {
+                                case EChannel.R:
+                                    _cachedResult = ImageUtility.ImageGeneration.GenerateSolidColor(pickerValue, 0, 0, 255);
+                                    break;
+                                case EChannel.G:
+                                    _cachedResult = ImageUtility.ImageGeneration.GenerateSolidColor(0, pickerValue, 0, 255);
+                                    break;
+                                case EChannel.B:
+                                    _cachedResult = ImageUtility.ImageGeneration.GenerateSolidColor(0, 0, pickerValue, 255);
+                                    break;
+                                case EChannel.A:
+                                    _cachedResult = ImageUtility.ImageGeneration.GenerateSolidColor(pickerValue, pickerValue, pickerValue, pickerValue);
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
 
             private void InitializeElements()
             {
@@ -177,10 +211,12 @@ namespace Multi_Channel_Image_Tool
                         throw new ArgumentOutOfRangeException();
                 }
 
-                _extractedPreview = ImageUtility.ImageGeneration.BitmapToImageSource(ChannelImage);
+                UpdateCachedResult();
 
-                PreviewImage.Source = _extractedPreview;
-                PreviewImageTooltip.Source = _extractedPreview;
+                var extractedPreview = ImageUtility.ImageGeneration.BitmapToImageSource(ChannelImage);
+
+                PreviewImage.Source = extractedPreview;
+                PreviewImageTooltip.Source = extractedPreview;
             }
 
             private void OnSelectedPickerTypeChanged(object sender, SelectionChangedEventArgs e)

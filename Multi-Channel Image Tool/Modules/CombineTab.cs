@@ -15,10 +15,14 @@ namespace Multi_Channel_Image_Tool
         //------------------------------------------------------------------------------------//
 
         private List<Tuple<string, ICanHaveErrors>> _combine_errorDependencies = new List<Tuple<string, ICanHaveErrors>>();
+        private string _lastSettingsHash;
+        private Bitmap _cachedResult;
 
         //------------------------------------------------------------------------------------//
         /*--------------------------------- PROPERTIES ---------------------------------------*/
         //------------------------------------------------------------------------------------//
+
+        private string SettingsHash => $"{Combine_ChannelPickerR.SettingsHash}|{Combine_ChannelPickerG.SettingsHash}|{Combine_ChannelPickerB.SettingsHash}|{Combine_ChannelPickerA.SettingsHash}";
 
         private List<string> Combine_Errors
         {
@@ -94,6 +98,18 @@ namespace Multi_Channel_Image_Tool
             Combine_UpdateFinalResult.IsEnabled = Combine_SaveAs.IsEnabled = errors.Count == 0;
         }
 
+        private void UpdateCachedResult()
+        {
+            // Only redo combining the channels if settings changed.
+            if (!SettingsHash.Equals(_lastSettingsHash))
+            {
+                _lastSettingsHash = SettingsHash;
+
+                _cachedResult = ImageUtility.ImageGeneration.CombineChannels(Combine_ChannelPickerR.ChannelImage, Combine_ChannelPickerG.ChannelImage,
+                    Combine_ChannelPickerB.ChannelImage, Combine_ChannelPickerA.ChannelImage);
+            }
+        }
+
         private void Combine_UpdatePreview(object sender, RoutedEventArgs e)
         {
             if (Combine_AreThereErrors)
@@ -102,8 +118,10 @@ namespace Multi_Channel_Image_Tool
                 return;
             }
 
-            ImageSource result = ImageUtility.ImageGeneration.CombineChannelsAndGetSource(Combine_ChannelPickerR.ChannelImage, Combine_ChannelPickerG.ChannelImage,
-                Combine_ChannelPickerB.ChannelImage, Combine_ChannelPickerA.ChannelImage);
+            UpdateCachedResult();
+
+            ImageSource result = ImageUtility.ImageGeneration.BitmapToImageSource(_cachedResult);
+
             Combine_FinalPreview.Source = result;
             Combine_FinalPreviewTooltip.Source = result;
         }
@@ -124,10 +142,10 @@ namespace Multi_Channel_Image_Tool
             {
                 try
                 {
-                    Bitmap combinedImage = ImageUtility.ImageGeneration.CombineChannels(Combine_ChannelPickerR.ChannelImage, Combine_ChannelPickerG.ChannelImage,
-                         Combine_ChannelPickerB.ChannelImage, Combine_ChannelPickerA.ChannelImage);
-                    combinedImage.Save(dialog.FileName);
-                    Combine_FinalPreviewTooltip.Source = Combine_FinalPreview.Source = ImageUtility.ImageGeneration.BitmapToImageSource(combinedImage);
+                    UpdateCachedResult();
+
+                    _cachedResult.Save(dialog.FileName);
+                    Combine_FinalPreviewTooltip.Source = Combine_FinalPreview.Source = ImageUtility.ImageGeneration.BitmapToImageSource(_cachedResult);
 
                     MessageBox.Show("Image successfully generated and saved.");
                 }

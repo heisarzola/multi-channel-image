@@ -83,10 +83,10 @@ namespace Multi_Channel_Image_Tool
                 {
                     _lastValidSelection = Split_ImagePicker.SelectedImagePath;
 
-                    _split_r = ImageUtility.ImageGeneration.ExtractChannel(Split_ImagePicker.SelectedImagePath, EChannel.R, EChannel.R);
-                    _split_g = ImageUtility.ImageGeneration.ExtractChannel(Split_ImagePicker.SelectedImagePath, EChannel.G, EChannel.G);
-                    _split_b = ImageUtility.ImageGeneration.ExtractChannel(Split_ImagePicker.SelectedImagePath, EChannel.B, EChannel.B);
-                    _split_a = ImageUtility.ImageGeneration.ExtractChannel(Split_ImagePicker.SelectedImagePath, EChannel.A, EChannel.A);
+                    _split_r = ImageUtility.ImageGeneration.ExtractChannel(Split_ImagePicker.SelectedImagePath, EChannel.R, EChannel.R, "(1 of 4)");
+                    _split_g = ImageUtility.ImageGeneration.ExtractChannel(Split_ImagePicker.SelectedImagePath, EChannel.G, EChannel.G, "(2 of 4)");
+                    _split_b = ImageUtility.ImageGeneration.ExtractChannel(Split_ImagePicker.SelectedImagePath, EChannel.B, EChannel.B, "(3 of 4)");
+                    _split_a = ImageUtility.ImageGeneration.ExtractChannel(Split_ImagePicker.SelectedImagePath, EChannel.A, EChannel.A, "(4 of 4)");
                 }
 
                 Split_APreviewTooltip.Source = Split_APreview.Source = ImageUtility.ImageGeneration.BitmapToImageSource(_split_a);

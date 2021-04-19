@@ -67,9 +67,15 @@ namespace Multi_Channel_Image_Tool
             public static ImageSource ExtractChannelAndGetSource(string imagePath, EChannel channelToExtract, EChannel finalChannel)
             => BitmapToImageSource(ExtractChannel(imagePath, channelToExtract, finalChannel));
 
-            public static Bitmap ExtractChannel(string imagePath, EChannel channelToExtract, EChannel finalChannel)
+            public static Bitmap ExtractChannel(string imagePath, EChannel channelToExtract, EChannel finalChannel, string popupTextExtra = "")
             {
                 if (!ImageUtility.Validation.IsValidImage(imagePath)) { return new Bitmap(1, 1); }
+
+                PopupTextWindow popupText = new PopupTextWindow
+                {
+                    PopupText = { Text = $"Generating Texture By Extracting Channel, Please Wait {popupTextExtra}" }
+                };
+                popupText.Show();
 
                 var bitmap = new Bitmap(imagePath);
                 var extractedBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppRgb);
@@ -130,6 +136,7 @@ namespace Multi_Channel_Image_Tool
                     }
                 }
 
+                popupText.Close();
                 bitmap.Dispose();
                 return extractedBitmap;
             }
