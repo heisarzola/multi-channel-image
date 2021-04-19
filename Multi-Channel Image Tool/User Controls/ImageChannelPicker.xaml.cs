@@ -87,7 +87,7 @@ namespace Multi_Channel_Image_Tool
                     switch (_pickerType)
                     {
                         case EChannelPickerType.PickTexture:
-                            errors.Concat(TargetImagePicker.Errors.ConvertAll(error => $"Image Picker: {errors}"));
+                            errors.Concat(TargetImagePicker.Errors.ConvertAll(error => $"Image Picker: {error}"));
                             break;
                         case EChannelPickerType.SetUniformValue:
                             break;
