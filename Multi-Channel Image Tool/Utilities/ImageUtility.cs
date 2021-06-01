@@ -58,7 +58,7 @@ namespace Multi_Channel_Image_Tool
 
             public static Bitmap GenerateSolidColor(int r, int g, int b, int a)
             {
-                Bitmap solidColor = new Bitmap(1, 1, PixelFormat.Format32bppRgb);
+                Bitmap solidColor = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
                 solidColor.SetPixel(0, 0, Color.FromArgb(a, r, g, b));
 
                 return solidColor;
@@ -78,7 +78,7 @@ namespace Multi_Channel_Image_Tool
                 popupText.Show();
 
                 var bitmap = new Bitmap(imagePath);
-                var extractedBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppRgb);
+                var extractedBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppArgb);
 
                 for (int y = 0; y < bitmap.Height; y++)
                 {
@@ -120,10 +120,7 @@ namespace Multi_Channel_Image_Tool
                                     extractedBitmap.SetPixel(x, y, Color.FromArgb(255, 0, 0, intensity));
                                     break;
                                 case EChannel.A:
-                                    extractedBitmap.SetPixel(x, y,
-                                        ImageUtility.Validation.ImageHasTransparency(imagePath)
-                                            ? Color.FromArgb(intensity, intensity, intensity, intensity)
-                                            : Color.FromArgb(255, 252, 255, 255));
+                                    extractedBitmap.SetPixel(x, y, Color.FromArgb(255, intensity, intensity, intensity));
                                     break;
                                 default:
                                     throw new ArgumentOutOfRangeException(nameof(finalChannel), finalChannel, null);
@@ -149,7 +146,7 @@ namespace Multi_Channel_Image_Tool
                 int width = Helpers.Max(r.Width, g.Width, b.Width, a.Width);
                 int height = Helpers.Max(r.Height, g.Height, b.Height, a.Height);
 
-                var merged = new Bitmap(width, height, PixelFormat.Format32bppRgb);
+                var merged = new Bitmap(width, height, PixelFormat.Format32bppArgb);
 
                 PopupTextWindow popupText = new PopupTextWindow
                 {
@@ -164,7 +161,7 @@ namespace Multi_Channel_Image_Tool
                         int rIntensity = r.GetPixel(x % r.Width, y % r.Height).R;
                         int gIntensity = g.GetPixel(x % g.Width, y % g.Height).G;
                         int bIntensity = b.GetPixel(x % b.Width, y % b.Height).B;
-                        int aIntensity = a.GetPixel(x % a.Width, y % a.Height).A;
+                        int aIntensity = a.GetPixel(x % a.Width, y % a.Height).R; // This uses the generated previews, so the alpha preview has 255 alpha throughout. However, any other channel has the alpha value.
 
                         merged.SetPixel(x, y, Color.FromArgb(aIntensity, rIntensity, gIntensity, bIntensity));
                     }
