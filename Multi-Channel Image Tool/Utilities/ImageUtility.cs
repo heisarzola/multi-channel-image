@@ -2,6 +2,7 @@
 using System.IO;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using Multi_Channel_Image_Tool.Additional_Windows;
 using System.Windows.Interop;
@@ -80,75 +81,71 @@ namespace Multi_Channel_Image_Tool
             {
                 if (!ImageUtility.Validation.IsValidImage(imagePath)) { return new Bitmap(1, 1); }
 
-                PopupTextWindow popupText = new PopupTextWindow
-                {
-                    PopupText = { Text = $"Generating Texture By Extracting Channel, Please Wait {popupTextExtra}" }
-                };
-                popupText.Show();
-
                 var bitmap = new Bitmap(imagePath);
                 var extractedBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppArgb);
-
-                for (int y = 0; y < bitmap.Height; y++)
-                {
-                    for (int x = 0; x < bitmap.Width; x++)
+                PopupTextWindow.OpenWindowAndExecute($"Generating Texture By Extracting Channel, Please Wait {popupTextExtra}",
+                    () =>
                     {
-                        Color pixelColor = bitmap.GetPixel(x, y);
-
-                        int intensity;
-
-                        switch (channelToExtract)
+                        for (int y = 0; y < bitmap.Height; y++)
                         {
-                            case EChannel.R:
-                                intensity = pixelColor.R;
-                                break;
-                            case EChannel.G:
-                                intensity = pixelColor.G;
-                                break;
-                            case EChannel.B:
-                                intensity = pixelColor.B;
-                                break;
-                            case EChannel.A:
-                                intensity = ImageUtility.Validation.ImageHasTransparency(imagePath) ? pixelColor.A : 255;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(channelToExtract), channelToExtract, null);
-                        }
-
-                        if (intensity > 0 & intensity <= 255)
-                        {
-                            if (invert) { intensity = 255 - intensity; }
-
-                            switch (finalChannel)
+                            for (int x = 0; x < bitmap.Width; x++)
                             {
-                                case EChannel.R:
-                                    extractedBitmap.SetPixel(x, y, Color.FromArgb(255, intensity, 0, 0));
-                                    break;
-                                case EChannel.G:
-                                    extractedBitmap.SetPixel(x, y, Color.FromArgb(255, 0, intensity, 0));
-                                    break;
-                                case EChannel.B:
-                                    extractedBitmap.SetPixel(x, y, Color.FromArgb(255, 0, 0, intensity));
-                                    break;
-                                case EChannel.A:
-                                    extractedBitmap.SetPixel(x, y, Color.FromArgb(255, intensity, intensity, intensity));
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException(nameof(finalChannel), finalChannel, null);
+                                Color pixelColor = bitmap.GetPixel(x, y);
+
+                                int intensity;
+
+                                switch (channelToExtract)
+                                {
+                                    case EChannel.R:
+                                        intensity = pixelColor.R;
+                                        break;
+                                    case EChannel.G:
+                                        intensity = pixelColor.G;
+                                        break;
+                                    case EChannel.B:
+                                        intensity = pixelColor.B;
+                                        break;
+                                    case EChannel.A:
+                                        intensity = ImageUtility.Validation.ImageHasTransparency(imagePath) ? pixelColor.A : 255;
+                                        break;
+                                    default:
+                                        throw new ArgumentOutOfRangeException(nameof(channelToExtract), channelToExtract, null);
+                                }
+
+                                if (intensity > 0 & intensity <= 255)
+                                {
+                                    if (invert) { intensity = 255 - intensity; }
+
+                                    switch (finalChannel)
+                                    {
+                                        case EChannel.R:
+                                            extractedBitmap.SetPixel(x, y, Color.FromArgb(255, intensity, 0, 0));
+                                            break;
+                                        case EChannel.G:
+                                            extractedBitmap.SetPixel(x, y, Color.FromArgb(255, 0, intensity, 0));
+                                            break;
+                                        case EChannel.B:
+                                            extractedBitmap.SetPixel(x, y, Color.FromArgb(255, 0, 0, intensity));
+                                            break;
+                                        case EChannel.A:
+                                            extractedBitmap.SetPixel(x, y, Color.FromArgb(255, intensity, intensity, intensity));
+                                            break;
+                                        default:
+                                            throw new ArgumentOutOfRangeException(nameof(finalChannel), finalChannel, null);
+                                    }
+                                }
+                                else
+                                {
+                                    extractedBitmap.SetPixel(x, y, Color.FromArgb(0, 0, 0, 0));
+                                }
                             }
                         }
-                        else
-                        {
-                            extractedBitmap.SetPixel(x, y, Color.FromArgb(0, 0, 0, 0));
-                        }
-                    }
-                }
+                    });
 
-                popupText.Close();
                 bitmap.Dispose();
                 return extractedBitmap;
             }
-
+            
             public static ImageSource CombineChannelsAndGetSource(Bitmap r, Bitmap g, Bitmap b, Bitmap a)
                 => BitmapToImageSource(CombineChannels(r, g, b, a));
 
