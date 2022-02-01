@@ -65,7 +65,7 @@ namespace Multi_Channel_Image_Tool.User_Controls
 
         private bool ValidateValues()
         {
-            Regex regex = new Regex("[^0-9]+");
+            Regex regex = new Regex("[0-9]+");
             bool isValid = regex.IsMatch(ValueField.Text);
             if (isValid)
             {
@@ -82,7 +82,7 @@ namespace Multi_Channel_Image_Tool.User_Controls
         private void NumberValidation(object sender, TextCompositionEventArgs e)
         {
             bool isValid = ValidateValues();
-            e.Handled = isValid;
+            e.Handled = !isValid;
             OnSliderValueChanged();
         }
 
@@ -94,6 +94,7 @@ namespace Multi_Channel_Image_Tool.User_Controls
 
         private void OnTextBoxValueChanged(object sender, TextChangedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(ValueField.Text)) { ValueField.Text = Minimum.ToString(); }
             ValidateValues();
             OnSliderValueChanged();
         }

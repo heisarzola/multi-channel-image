@@ -59,7 +59,7 @@ namespace Multi_Channel_Image_Tool
         /*---------------------------------- METHODS -----------------------------------------*/
         //------------------------------------------------------------------------------------//
 
-        private void Combine_TrackStates()
+        private void Combine_Initialize()
         {
             // Add Error Dependencies
             _combine_errorDependencies.Add(new Tuple<string, ICanHaveErrors>("Channel R", Combine_ChannelPickerR));

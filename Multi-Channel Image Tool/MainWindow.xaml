@@ -139,6 +139,7 @@
                         <RowDefinition Height="*" MaxHeight="40"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*" MaxHeight="30"/>
+                        <RowDefinition Height="*" MaxHeight="30"/>
                     </Grid.RowDefinitions>
 
                     <Grid.ColumnDefinitions>
@@ -198,10 +199,15 @@
                         </Image>
                     </Border>
 
-                    <Button Name="Split_SaveR" Focusable="False" Grid.Row="2" Grid.Column="0" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveRButton"/>
-                    <Button Name="Split_SaveG" Focusable="False" Grid.Row="2" Grid.Column="1" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveGButton"/>
-                    <Button Name="Split_SaveB" Focusable="False" Grid.Row="2" Grid.Column="2" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveBButton"/>
-                    <Button Name="Split_SaveA" Focusable="False" Grid.Row="2" Grid.Column="3" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveAButton"/>
+                    <CheckBox Name="Split_InvertCheckboxR" Focusable="False" Grid.Row="2" Grid.Column="0" Content="Invert?" VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="False"/>
+                    <CheckBox Name="Split_InvertCheckboxG" Focusable="False" Grid.Row="2" Grid.Column="1" Content="Invert?" VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="False"/>
+                    <CheckBox Name="Split_InvertCheckboxB" Focusable="False" Grid.Row="2" Grid.Column="2" Content="Invert?" VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="False"/>
+                    <CheckBox Name="Split_InvertCheckboxA" Focusable="False" Grid.Row="2" Grid.Column="3" Content="Invert?" VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="False"/>
+
+                    <Button Name="Split_SaveR" Focusable="False" Grid.Row="3" Grid.Column="0" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveRButton"/>
+                    <Button Name="Split_SaveG" Focusable="False" Grid.Row="3" Grid.Column="1" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveGButton"/>
+                    <Button Name="Split_SaveB" Focusable="False" Grid.Row="3" Grid.Column="2" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveBButton"/>
+                    <Button Name="Split_SaveA" Focusable="False" Grid.Row="3" Grid.Column="3" Margin="10 5" Content="Save As..." IsEnabled="False" Click="Split_SaveAButton"/>
                 </Grid>
             </TabItem>
         </TabControl>

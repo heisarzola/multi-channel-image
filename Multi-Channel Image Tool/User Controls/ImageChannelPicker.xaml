@@ -45,6 +45,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="115"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="0.5*" MaxWidth="80"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Channel To Extract" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -58,6 +59,7 @@
                     </ComboBox.Items>
                 </ComboBox>
 
+                <CheckBox Name="InvertCheckbox" Content="Invert?" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Grid>
         </StackPanel>
 

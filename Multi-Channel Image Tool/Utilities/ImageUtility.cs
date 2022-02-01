@@ -28,7 +28,16 @@ namespace Multi_Channel_Image_Tool
             private static readonly string[] _VALID_EXTENSIONS = new[] { ".jpg", ".jpeg", _PNG };
             public const string _VALID_EXTENSIONS_AS_STRING_LIST = "png, jpg, jpeg";
 
-            public static bool IsValidImage(string imagePath) => File.Exists(imagePath) && _VALID_EXTENSIONS.Contains(Path.GetExtension(imagePath));
+            private static bool IsValidBitmap(string filename)
+            {
+                try
+                {
+                    using (var bmp = new Bitmap(filename)) { }
+                    return true;
+                }
+                catch (Exception) { return false; }
+            }
+            public static bool IsValidImage(string imagePath) => File.Exists(imagePath) && _VALID_EXTENSIONS.Contains(Path.GetExtension(imagePath)) && IsValidBitmap(imagePath);
             public static bool ImageHasTransparency(string imagePath) => Path.GetExtension(imagePath).Equals(_PNG);
         }
 
@@ -53,7 +62,7 @@ namespace Multi_Channel_Image_Tool
                 }
                 finally { DeleteObject(handle); }
             }
-            
+
             #endregion Converters
 
             public static Bitmap GenerateSolidColor(int r, int g, int b, int a)
@@ -64,10 +73,10 @@ namespace Multi_Channel_Image_Tool
                 return solidColor;
             }
 
-            public static ImageSource ExtractChannelAndGetSource(string imagePath, EChannel channelToExtract, EChannel finalChannel)
-            => BitmapToImageSource(ExtractChannel(imagePath, channelToExtract, finalChannel));
+            public static ImageSource ExtractChannelAndGetSource(string imagePath, EChannel channelToExtract, EChannel finalChannel, bool invert)
+            => BitmapToImageSource(ExtractChannel(imagePath, channelToExtract, finalChannel, invert));
 
-            public static Bitmap ExtractChannel(string imagePath, EChannel channelToExtract, EChannel finalChannel, string popupTextExtra = "")
+            public static Bitmap ExtractChannel(string imagePath, EChannel channelToExtract, EChannel finalChannel, bool invert, string popupTextExtra = "")
             {
                 if (!ImageUtility.Validation.IsValidImage(imagePath)) { return new Bitmap(1, 1); }
 
@@ -108,6 +117,8 @@ namespace Multi_Channel_Image_Tool
 
                         if (intensity > 0 & intensity <= 255)
                         {
+                            if (invert) { intensity = 255 - intensity; }
+
                             switch (finalChannel)
                             {
                                 case EChannel.R:
@@ -161,7 +172,8 @@ namespace Multi_Channel_Image_Tool
                         int rIntensity = r.GetPixel(x % r.Width, y % r.Height).R;
                         int gIntensity = g.GetPixel(x % g.Width, y % g.Height).G;
                         int bIntensity = b.GetPixel(x % b.Width, y % b.Height).B;
-                        int aIntensity = a.GetPixel(x % a.Width, y % a.Height).R; // This uses the generated previews, so the alpha preview has 255 alpha throughout. However, any other channel has the alpha value.
+                        // This uses the generated previews, so the alpha preview has 255 alpha throughout. However, any other channel has the alpha value.
+                        int aIntensity = a.GetPixel(x % a.Width, y % a.Height).R;
 
                         merged.SetPixel(x, y, Color.FromArgb(aIntensity, rIntensity, gIntensity, bIntensity));
                     }

@@ -37,8 +37,8 @@ namespace Multi_Channel_Image_Tool
         {
             InitializeComponent();
 
-            Combine_TrackStates();
-            Split_TrackStates();
+            Combine_Initialize();
+            Split_Initialize();
 
             Combine_UpdateVisualElements();
             Split_UpdateVisualElements();

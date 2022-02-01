@@ -58,9 +58,9 @@ namespace Multi_Channel_Image_Tool
                     switch (_pickerType)
                     {
                         case EChannelPickerType.PickTexture:
-                            return $"{TargetImagePath}|{_channelToExtract.ToString()}|{_targetChannel.ToString()}";
+                            return $"{TargetImagePath}|{_channelToExtract.ToString()}|{_targetChannel.ToString()}|{Invert.ToString()}";
                         case EChannelPickerType.SetUniformValue:
-                            return UniformValueSlider.Value.ToString();
+                            return $"{UniformValueSlider.Value.ToString()}|{Invert.ToString()}";
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -77,6 +77,8 @@ namespace Multi_Channel_Image_Tool
                     return _cachedResult;
                 }
             }
+
+            public bool Invert => InvertCheckbox.IsChecked ?? false;
 
             public List<string> Errors
             {
@@ -126,6 +128,16 @@ namespace Multi_Channel_Image_Tool
                             UpdatePreviews();
                             OnStateChanged();
                         };
+                        InvertCheckbox.Unchecked += (s, a) =>
+                        {
+                            UpdatePreviews();
+                            OnStateChanged();
+                        };
+                        InvertCheckbox.Checked += (s, a) =>
+                        {
+                            UpdatePreviews();
+                            OnStateChanged();
+                        };
                     }
                 };
             }
@@ -147,7 +159,7 @@ namespace Multi_Channel_Image_Tool
                     switch (_pickerType)
                     {
                         case EChannelPickerType.PickTexture:
-                            _cachedResult= ImageUtility.ImageGeneration.ExtractChannel(TargetImagePath, _channelToExtract, _targetChannel);
+                            _cachedResult = ImageUtility.ImageGeneration.ExtractChannel(TargetImagePath, _channelToExtract, _targetChannel, Invert);
                             break;
                         case EChannelPickerType.SetUniformValue:
                             int pickerValue = UniformValueSlider.Value;
