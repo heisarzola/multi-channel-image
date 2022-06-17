@@ -67,80 +67,6 @@ namespace Multi_Channel_Image_Tool
 
             #endregion Converters
 
-            private unsafe struct BitmapDataHelper
-            {
-                private byte* StartPos { get; }
-                private int Stride { get; }
-                private Bitmap Image { get; }
-                private BitmapData Data { get; }
-
-                public byte GetPixel(EChannel channel, int x, int y)
-                {
-                    byte* row = StartPos + (y * Stride);
-                    int b = x * 4;
-
-                    switch (channel)
-                    {
-                        case EChannel.R:
-                            return row[b + 2];
-                        case EChannel.G:
-                            return row[b + 1];
-                        case EChannel.B:
-                            return row[b];
-                        case EChannel.A:
-                            return row[b + 3];
-                        default:
-                            return 0;
-                    }
-                }
-
-                public void SetPixel(EChannel channel, int x, int y, byte newValue)
-                {
-                    byte* row = StartPos + (y * Stride);
-                    int b = x * 4;
-
-                    switch (channel)
-                    {
-                        case EChannel.R:
-                            row[b + 2] = newValue;
-                            return;
-                        case EChannel.G:
-                            row[b + 1] = newValue;
-                            return;
-                        case EChannel.B:
-                            row[b] = newValue;
-                            return;
-                        case EChannel.A:
-                            row[b + 3] = newValue;
-                            return;
-                    }
-                }
-
-                public void SetPixel(int x, int y, byte newR, byte newG, byte newB, byte newA)
-                {
-                    byte* row = StartPos + (y * Stride);
-                    int b = x * 4;
-
-                    row[b + 2] = newR;
-                    row[b + 1] = newG;
-                    row[b] = newB;
-                    row[b + 3] = newA;
-                }
-
-                public void Unlock()
-                {
-                    Image.UnlockBits(Data);
-                }
-
-                public BitmapDataHelper(Bitmap image)
-                {
-                    Image = image;
-                    Data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-                    StartPos = (byte*)Data.Scan0.ToPointer();
-                    Stride = Data.Stride;
-                }
-            }
-
             public static Bitmap GenerateSolidColor(int r, int g, int b, int a)
             {
                 Bitmap solidColor = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
@@ -152,82 +78,105 @@ namespace Multi_Channel_Image_Tool
             public static ImageSource ExtractChannelAndGetSource(string imagePath, EChannel channelToExtract, EChannel finalChannel, bool invert)
             => BitmapToImageSource(ExtractChannel(imagePath, channelToExtract, finalChannel, invert));
 
-            public static  Bitmap ExtractChannel(string imagePath, EChannel channelToExtract, EChannel finalChannel, bool invert, string popupTextExtra = "")
+            public static unsafe Bitmap ExtractChannel(string imagePath, EChannel channelToExtract, EChannel finalChannel, bool invert, string popupTextExtra = "")
             {
                 if (!ImageUtility.Validation.IsValidImage(imagePath)) { return new Bitmap(1, 1); }
 
                 Bitmap image = new Bitmap(imagePath);
+                BitmapData imageData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
 
                 PopupTextWindow.OpenWindowAndExecute($"Generating Texture By Extracting Channel, Please Wait {popupTextExtra}",
                     () =>
                     {
-                        BitmapDataHelper helper = new BitmapDataHelper(image);
+                        byte* startPos = (byte*)imageData.Scan0.ToPointer();
+                        int stride = imageData.Stride;
                         bool imageHasTransparency = ImageUtility.Validation.ImageHasTransparency(imagePath);
 
-                        for (int y = 0; y < image.Height; y++)
+                        for (int y = 0; y < imageData.Height; y++)
                         {
-                            for (int x = 0; x < image.Width; x++)
+                            byte* row = startPos + (y * stride);
+
+                            for (int x = 0; x < imageData.Width; x++)
                             {
+                                int bIndex = x * 4; // 4 = 4 bytes per pixel
+                                int gIndex = bIndex + 1;
+                                int rIndex = bIndex + 2;
+                                int aIndex = bIndex + 3;
+
                                 switch (channelToExtract)
                                 {
                                     case EChannel.R:
-                                        byte pixelR = helper.GetPixel(EChannel.R, x, y);
+                                        byte pixelR = row[rIndex];
                                         if (invert) { pixelR = (byte)(byte.MaxValue - pixelR); }
 
-                                        helper.SetPixel(EChannel.R, x, y, pixelR);
-                                        helper.SetPixel(EChannel.G, x, y, byte.MinValue);
-                                        helper.SetPixel(EChannel.B, x, y, byte.MinValue);
+                                        row[rIndex] = pixelR;
+                                        row[gIndex] = byte.MinValue;
+                                        row[bIndex] = byte.MinValue;
                                         break;
                                     case EChannel.G:
-                                        byte pixelG = helper.GetPixel(EChannel.G, x, y);
+                                        byte pixelG = row[gIndex];
                                         if (invert) { pixelG = (byte)(byte.MaxValue - pixelG); }
 
-                                        helper.SetPixel(EChannel.R, x, y, byte.MinValue);
-                                        helper.SetPixel(EChannel.G, x, y, pixelG);
-                                        helper.SetPixel(EChannel.B, x, y, byte.MinValue);
+                                        row[rIndex] = byte.MinValue;
+                                        row[gIndex] = pixelG;
+                                        row[bIndex] = byte.MinValue;
                                         break;
                                     case EChannel.B:
-                                        byte pixelB = helper.GetPixel(EChannel.B, x, y);
+                                        byte pixelB = row[bIndex];
                                         if (invert) { pixelB = (byte)(byte.MaxValue - pixelB); }
 
-                                        helper.SetPixel(EChannel.R, x, y, byte.MinValue);
-                                        helper.SetPixel(EChannel.G, x, y, byte.MinValue);
-                                        helper.SetPixel(EChannel.B, x, y, pixelB);
+                                        row[rIndex] = byte.MinValue;
+                                        row[gIndex] = byte.MinValue;
+                                        row[bIndex] = pixelB;
                                         break;
                                     case EChannel.A:
-                                        byte pixelA = imageHasTransparency ? helper.GetPixel(EChannel.A, x, y) : byte.MaxValue;
+                                        byte pixelA = imageHasTransparency ? row[aIndex] : byte.MaxValue;
                                         if (invert) { pixelA = (byte)(byte.MaxValue - pixelA); }
 
-                                        helper.SetPixel(EChannel.R, x, y, pixelA);
-                                        helper.SetPixel(EChannel.G, x, y, pixelA);
-                                        helper.SetPixel(EChannel.B, x, y, pixelA);
-                                        helper.SetPixel(EChannel.A, x, y, byte.MaxValue);
+                                        row[rIndex] = pixelA;
+                                        row[gIndex] = pixelA;
+                                        row[bIndex] = pixelA;
+                                        row[aIndex] = byte.MaxValue;
                                         break;
                                     default:
                                         throw new ArgumentOutOfRangeException(nameof(channelToExtract), channelToExtract, null);
                                 }
                             }
                         }
-
-                        helper.Unlock();
                     });
+
+                image.UnlockBits(imageData);
                 return image;
             }
 
             public static ImageSource CombineChannelsAndGetSource(Bitmap r, Bitmap g, Bitmap b, Bitmap a)
                 => BitmapToImageSource(CombineChannels(r, g, b, a));
 
-            public static Bitmap CombineChannels(Bitmap r, Bitmap g, Bitmap b, Bitmap a)
+            public static unsafe Bitmap CombineChannels(Bitmap r, Bitmap g, Bitmap b, Bitmap a)
             {
                 int width = Helpers.Max(r.Width, g.Width, b.Width, a.Width);
                 int height = Helpers.Max(r.Height, g.Height, b.Height, a.Height);
 
                 Bitmap merged = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-                BitmapDataHelper mergedHelper = new BitmapDataHelper(merged);
-                BitmapDataHelper rHelper = new BitmapDataHelper(r);
-                BitmapDataHelper gHelper = new BitmapDataHelper(g);
-                BitmapDataHelper bHelper = new BitmapDataHelper(b);
-                BitmapDataHelper aHelper = new BitmapDataHelper(a);
+                BitmapData mergedData = merged.LockBits(new Rectangle(0, 0, merged.Width, merged.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                byte* mergedStartPos = (byte*)mergedData.Scan0.ToPointer();
+                int mergedStride = mergedData.Stride;
+
+                BitmapData rData = r.LockBits(new Rectangle(0, 0, r.Width, r.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                byte* rStartPos = (byte*)rData.Scan0.ToPointer();
+                int rStride = rData.Stride;
+
+                BitmapData gData = g.LockBits(new Rectangle(0, 0, g.Width, g.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                byte* gStartPos = (byte*)gData.Scan0.ToPointer();
+                int gStride = gData.Stride;
+
+                BitmapData bData = b.LockBits(new Rectangle(0, 0, b.Width, b.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                byte* bStartPos = (byte*)bData.Scan0.ToPointer();
+                int bStride = bData.Stride;
+
+                BitmapData aData = a.LockBits(new Rectangle(0, 0, a.Width, a.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                byte* aStartPos = (byte*)aData.Scan0.ToPointer();
+                int aStride = aData.Stride;
 
                 PopupTextWindow popupText = new PopupTextWindow
                 {
@@ -237,23 +186,43 @@ namespace Multi_Channel_Image_Tool
 
                 for (int y = 0; y < height; y++)
                 {
+                    byte* mergedImage = mergedStartPos + (y * mergedStride);
+                    byte* rImage = rStartPos + (y % rData.Height * rStride);
+                    byte* gImage = gStartPos + (y % gData.Height * gStride);
+                    byte* bImage = bStartPos + (y % bData.Height * bStride);
+                    byte* aImage = aStartPos + (y % aData.Height * aStride);
+
                     for (int x = 0; x < width; x++)
                     {
-                        byte rIntensity = rHelper.GetPixel(EChannel.R, x % r.Width, y % r.Height);
-                        byte gIntensity = gHelper.GetPixel(EChannel.G, x % g.Width, y % g.Height);
-                        byte bIntensity = bHelper.GetPixel(EChannel.B, x % b.Width, y % b.Height);
-                        // This uses the generated previews, so the alpha preview has 255 alpha throughout. However, any other channel has the alpha value. So we use R instead of A here.
-                        byte aIntensity = aHelper.GetPixel(EChannel.R, x % a.Width, y % a.Height);
+                        int rImageRIndex = (x % rData.Width) * 4 + 2;
+                        byte rIntensity = rImage[rImageRIndex];
 
-                        mergedHelper.SetPixel(x, y, rIntensity, gIntensity, bIntensity, aIntensity);
+                        int gImageGIndex = (x % rData.Width) * 4 + 1;
+                        byte gIntensity = gImage[gImageGIndex];
+
+                        int bImageBIndex = (x % rData.Width) * 4;
+                        byte bIntensity = bImage[bImageBIndex];
+                        // This uses the generated previews, so the alpha preview has 255 alpha throughout. However, any other channel has the alpha value. So we use R instead of A here.
+                        int aImageRIndex = (x % aData.Width) * 4 + 2;
+                        byte aIntensity = aImage[aImageRIndex];
+
+                        int bIndex = x * 4; // 4 = 4 bytes per pixel
+                        int gIndex = bIndex + 1;
+                        int rIndex = bIndex + 2;
+                        int aIndex = bIndex + 3;
+
+                        mergedImage[rIndex] = rIntensity;
+                        mergedImage[gIndex] = gIntensity;
+                        mergedImage[bIndex] = bIntensity;
+                        mergedImage[aIndex] = aIntensity;
                     }
                 }
 
-                mergedHelper.Unlock();
-                rHelper.Unlock();
-                gHelper.Unlock();
-                bHelper.Unlock();
-                aHelper.Unlock();
+                merged.UnlockBits(mergedData);
+                r.UnlockBits(rData);
+                g.UnlockBits(gData);
+                b.UnlockBits(bData);
+                a.UnlockBits(aData);
 
                 popupText.Close();
                 return merged;
